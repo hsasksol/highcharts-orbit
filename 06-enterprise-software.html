@@ -81,6 +81,10 @@
   .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:18px; }
   .grid2 .panel { margin-bottom:0; }
   @media (max-width: 900px) { .grid2 { grid-template-columns:1fr; } }
+  .panel--guide {
+    background:color-mix(in srgb, var(--accent) 6%, var(--card-bg));
+    border-color:color-mix(in srgb, var(--accent) 30%, var(--border));
+  }
   .journey-slider { min-height:170px; }
   .journey-slide { display:none; }
   .journey-slide.is-active { display:block; }
@@ -140,8 +144,8 @@
     on the Orbit installation's referrer allowlist; opened from a local file the charts
     degrade silently to plain Highcharts.</div>
 
-  <div class="panel" data-orbit-context="Investigation journey">
-    <h2>The investigation</h2>
+  <div class="panel panel--guide" data-orbit-context="How to use Orbit in this demo">
+    <h2>How to use Orbit</h2>
     <div class="journey-slider" id="journey">
       <div class="journey-slide is-active">
         <div class="journey-step">Step 1 of 6</div>
