@@ -215,7 +215,10 @@ var catApparel = [1.85,1.87,1.84,1.84,1.83,1.87,1.84,1.88,1.88,1.83,1.84,1.87,1.
 var lateShipments = [42,35,37,37,41,36,36,38,37,36,36,41,38,41,38,34,42,52,78,112,148,178,205,224,236,244];
 var complaints = [13,13,13,13,11,12,11,12,11,12,13,11,13,12,12,13,13,16,24,35,46,55,64,70,74,77];
 
-function ts(data) { return { data: data, pointStart: START, pointInterval: WEEK }; }
+/* Explicit [x, y] timestamps: Orbit's page-mode date filter produces an empty
+   filtered view for series positioned with pointStart/pointInterval (verified
+   2026-08-30), so every datetime series carries its own timestamps. */
+function ts(data) { return { data: data.map(function (v, i) { return [START + i * WEEK, v]; }) }; }
 
 Highcharts.chart('chart-fulfillment', {
   orbit: {

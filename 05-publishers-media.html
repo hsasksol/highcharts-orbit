@@ -257,9 +257,7 @@ Highcharts.chart('chart-timeline', {
   tooltip: { valueSuffix: 'k views' },
   series: [{
     name: 'Pageviews',
-    data: ferryDailyViews,
-    pointStart: TODAY - 20 * DAY,
-    pointInterval: DAY,
+    data: ferryDailyViews.map(function (v, i) { return [TODAY - (20 - i) * DAY, v]; }),
     fillOpacity: 0.25
   }]
 });
