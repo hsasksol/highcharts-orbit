@@ -93,7 +93,8 @@
     border:1px solid var(--border); border-radius:10px; overflow:hidden;
     background:#fff; margin:0; box-shadow:var(--shadow);
   }
-  .journey-media img { display:block; width:100%; height:auto; }
+  .journey-media { display:flex; align-items:center; justify-content:center; }
+  .journey-media img { display:block; width:100%; height:auto; max-height:340px; object-fit:contain; }
   @media (max-width: 980px) { .journey-slide.is-active { grid-template-columns:1fr; } }
   .journey-step { color:var(--muted); font-size:.75rem; text-transform:uppercase; letter-spacing:.04em; }
   .journey-tool { color:var(--accent); font-size:1.25rem; font-weight:600; margin:6px 0 8px; }
