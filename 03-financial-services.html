@@ -78,6 +78,9 @@
     border-radius:8px; padding:10px 14px; font-size:.875rem; margin-bottom:18px;
   }
   :root[data-theme="dark"] #orbit-note { color:#fcd34d; border-color:#92400e; }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:18px; }
+  .grid2 .panel { margin-bottom:0; }
+  @media (max-width: 900px) { .grid2 { grid-template-columns:1fr; } }
   .industry-chip {
     width:40px; height:40px; border-radius:10px; flex:none;
     display:flex; align-items:center; justify-content:center;
@@ -156,8 +159,11 @@
   </div>
 
   <div class="panel"><div id="chart-value" class="chart"></div></div>
-  <div class="panel"><div id="chart-volatility" class="chart"></div></div>
-  <div class="panel"><div id="chart-variance" class="chart" style="height:340px"></div></div>
+  <div class="panel"><div id="chart-candles" class="chart" style="height:420px"></div></div>
+  <div class="grid2">
+    <div class="panel"><div id="chart-volatility" class="chart"></div></div>
+    <div class="panel"><div id="chart-variance" class="chart" style="height:380px"></div></div>
+  </div>
   <div class="panel"><div id="chart-tech" class="chart"></div></div>
 
   <footer>Dummy data, generated deterministically for demonstration. Generic holdings; not any
@@ -278,6 +284,32 @@ Highcharts.chart('chart-tech', {
     Object.assign(ts(tech2), { name: 'CloudPeak' }),
     Object.assign(ts(tech3), { name: 'DataHarbor' })
   ]
+});
+
+var portfolioOhlc = portfolio.map(function (c, i) {
+  var o = i ? portfolio[i - 1] : c;
+  var spread = Math.abs(c - o) * 0.35 + 0.25;
+  return [
+    START + i * DAY,
+    +o.toFixed(2),
+    +(Math.max(o, c) + spread * 0.6).toFixed(2),
+    +(Math.min(o, c) - spread * 0.4).toFixed(2),
+    +c.toFixed(2)
+  ];
+});
+
+Highcharts.stockChart('chart-candles', {
+  rangeSelector: { enabled: false },
+  orbit: {
+    id: 'uc03-candles',
+    llmContext: { text: ['Portfolio index as daily candles (OHLC derived deterministically from the daily closes for demonstration). Candle bodies grow markedly larger in the last 30 days, the visual signature of the volatility regime change.'] }
+  },
+  title: { text: 'Portfolio index, daily candles' },
+  subtitle: { text: 'Try: open the Indicators panel and add Bollinger Bands; the bands widen in the last month' },
+  xAxis: { type: 'datetime' },
+  yAxis: { title: { text: 'Index (start = 100)' } },
+  tooltip: { valueDecimals: 2 },
+  series: [{ type: 'candlestick', name: 'Portfolio', data: portfolioOhlc }]
 });
 
 if (window.Highcharts && Highcharts.orbitPage) {

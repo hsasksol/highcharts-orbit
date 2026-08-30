@@ -78,6 +78,9 @@
     border-radius:8px; padding:10px 14px; font-size:.875rem; margin-bottom:18px;
   }
   :root[data-theme="dark"] #orbit-note { color:#fcd34d; border-color:#92400e; }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:18px; }
+  .grid2 .panel { margin-bottom:0; }
+  @media (max-width: 900px) { .grid2 { grid-template-columns:1fr; } }
   .industry-chip {
     width:40px; height:40px; border-radius:10px; flex:none;
     display:flex; align-items:center; justify-content:center;
@@ -155,16 +158,22 @@
   </div>
 
   <div class="panel"><div id="chart-fulfillment" class="chart"></div></div>
-  <div class="panel"><div id="chart-warehouses" class="chart"></div></div>
-  <div class="panel"><div id="chart-categories" class="chart"></div></div>
-  <div class="panel"><div id="chart-late-complaints" class="chart"></div></div>
-  <div class="panel"><div id="chart-carriers" class="chart" style="height:340px"></div></div>
+  <div class="panel"><div id="chart-spread" class="chart"></div></div>
+  <div class="grid2">
+    <div class="panel"><div id="chart-warehouses" class="chart"></div></div>
+    <div class="panel"><div id="chart-categories" class="chart"></div></div>
+  </div>
+  <div class="grid2">
+    <div class="panel"><div id="chart-late-complaints" class="chart"></div></div>
+    <div class="panel"><div id="chart-carriers" class="chart" style="height:380px"></div></div>
+  </div>
 
   <footer>Dummy data, generated deterministically for demonstration. Generic company and
     carrier names; not any real organization's figures.</footer>
 </main>
 
 <script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
 <script src="https://code.highcharts.com/modules/annotations.js"></script>
 <script src="https://orbit.highsoftlabs.com/module/5150599f-09f3-4b54-a398-e60cb01da393/orbit.js"></script>
@@ -303,6 +312,39 @@ Highcharts.chart('chart-carriers', {
     ],
     dataLabels: { format: '{point.name}: {point.y}' }
   }]
+});
+
+Highcharts.chart('chart-spread', {
+  orbit: {
+    id: 'uc01-spread',
+    llmContext: { text: ['Weekly band between the fastest and slowest warehouse, with the median as a line. The band is narrow for four months, then widens sharply as East Coast pulls away from the others.'] }
+  },
+  title: { text: 'Warehouse spread: fastest to slowest' },
+  subtitle: { text: 'Try: open Anomaly detection on the median; the widening band is the early warning' },
+  xAxis: { type: 'datetime' },
+  yAxis: { title: { text: 'Days' } },
+  tooltip: { shared: true, valueSuffix: ' days' },
+  series: [
+    {
+      name: 'Fastest to slowest warehouse',
+      type: 'arearange',
+      data: whEast.map(function (v, i) {
+        var vals = [whEast[i], whMidwest[i], whWest[i]];
+        return [START + i * WEEK, Math.min.apply(null, vals), Math.max.apply(null, vals)];
+      }),
+      fillOpacity: 0.25,
+      lineWidth: 0,
+      marker: { enabled: false }
+    },
+    {
+      name: 'Median warehouse',
+      type: 'line',
+      data: whEast.map(function (v, i) {
+        var vals = [whEast[i], whMidwest[i], whWest[i]].sort(function (a, b) { return a - b; });
+        return [START + i * WEEK, vals[1]];
+      })
+    }
+  ]
 });
 
 /* Orbit page mode: link the charts for cross-filtering and comparison */

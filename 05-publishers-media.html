@@ -78,6 +78,9 @@
     border-radius:8px; padding:10px 14px; font-size:.875rem; margin-bottom:18px;
   }
   :root[data-theme="dark"] #orbit-note { color:#fcd34d; border-color:#92400e; }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:18px; }
+  .grid2 .panel { margin-bottom:0; }
+  @media (max-width: 900px) { .grid2 { grid-template-columns:1fr; } }
   .industry-chip {
     width:40px; height:40px; border-radius:10px; flex:none;
     display:flex; align-items:center; justify-content:center;
@@ -160,9 +163,14 @@
   </div>
 
   <div class="panel"><div id="chart-overview" class="chart"></div></div>
-  <div class="panel"><div id="chart-timeline" class="chart"></div></div>
-  <div class="panel"><div id="chart-sources" class="chart" style="height:340px"></div></div>
-  <div class="panel"><div id="chart-source-conversion" class="chart" style="height:340px"></div></div>
+  <div class="grid2">
+    <div class="panel"><div id="chart-timeline" class="chart"></div></div>
+    <div class="panel"><div id="chart-sources" class="chart"></div></div>
+  </div>
+  <div class="grid2">
+    <div class="panel"><div id="chart-source-conversion" class="chart"></div></div>
+    <div class="panel"><div id="chart-value-map" class="chart"></div></div>
+  </div>
   <div class="panel"><div id="chart-engagement" class="chart"></div></div>
 
   <footer>Dummy data, generated deterministically for demonstration. Generic publisher and
@@ -316,6 +324,26 @@ Highcharts.chart('chart-engagement', {
     { name: 'Subscriptions per 10k readers', type: 'column', data: articleSubsPer10k },
     { name: 'Avg reading time', type: 'line', yAxis: 1, data: articleReadTime, tooltip: { valueSuffix: ' min' } }
   ]
+});
+
+Highcharts.chart('chart-value-map', {
+  chart: { type: 'bubble' },
+  orbit: {
+    id: 'uc05-value-map',
+    llmContext: { text: ['Each bubble is one article: reading time against subscription conversion, bubble area proportional to pageviews. The huge Ferry story bubble sits in the low-left corner; the small, highly engaged articles convert best.'] }
+  },
+  title: { text: 'Engagement vs conversion, sized by pageviews' },
+  subtitle: { text: 'Try: open Insights; size does not predict value, engagement does' },
+  xAxis: { title: { text: 'Avg reading time (min)' }, min: 0 },
+  yAxis: { title: { text: 'Subscription conversion (%)' }, min: 0 },
+  legend: { enabled: false },
+  tooltip: { headerFormat: '', pointFormat: '<b>{point.name}</b><br>{point.x} min, {point.y:.2f}% conversion, {point.z}k views' },
+  series: [{
+    name: 'Articles',
+    data: articleNames.map(function (n, i) {
+      return { name: n, x: articleReadTime[i], y: articleSubsPer10k[i] / 100, z: articleViews[i] };
+    })
+  }]
 });
 
 if (window.Highcharts && Highcharts.orbitPage) {

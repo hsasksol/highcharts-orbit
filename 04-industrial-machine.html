@@ -79,6 +79,9 @@
   }
   :root[data-theme="dark"] #orbit-note { color:#fcd34d; border-color:#92400e; }
   .note { font-size:.9375rem; color:var(--muted); }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:18px; }
+  .grid2 .panel { margin-bottom:0; }
+  @media (max-width: 900px) { .grid2 { grid-template-columns:1fr; } }
   .industry-chip {
     width:40px; height:40px; border-radius:10px; flex:none;
     display:flex; align-items:center; justify-content:center;
@@ -165,9 +168,14 @@
   </div>
 
   <div class="panel"><div id="chart-m7" class="chart"></div></div>
-  <div class="panel"><div id="chart-gauge" class="chart" style="height:300px"></div></div>
-  <div class="panel"><div id="chart-machines" class="chart"></div></div>
-  <div class="panel"><div id="chart-sensors" class="chart"></div></div>
+  <div class="grid2">
+    <div class="panel"><div id="chart-gauge" class="chart" style="height:340px"></div></div>
+    <div class="panel"><div id="chart-vibtemp" class="chart" style="height:340px"></div></div>
+  </div>
+  <div class="grid2">
+    <div class="panel"><div id="chart-machines" class="chart"></div></div>
+    <div class="panel"><div id="chart-sensors" class="chart"></div></div>
+  </div>
 
   <footer>Dummy data, generated deterministically for demonstration. Generic plant and
     machines; not any real facility's readings.</footer>
@@ -297,6 +305,25 @@ Highcharts.chart('chart-sensors', {
     Object.assign(ts(temperature), { name: 'Bearing temperature', yAxis: 1, tooltip: { valueSuffix: ' °C' } }),
     Object.assign(ts(power), { name: 'Power consumption', yAxis: 2, tooltip: { valueSuffix: ' kW' } })
   ]
+});
+
+Highcharts.chart('chart-vibtemp', {
+  chart: { type: 'scatter' },
+  orbit: {
+    id: 'uc04-vibtemp',
+    llmContext: { text: ['Each point is one day: Machine 7 vibration against bearing temperature. The cloud sits tight around 2.1 mm/s and 58 C for weeks, then walks up and to the right as both rise together.'] }
+  },
+  title: { text: 'Machine 7: vibration vs bearing temperature' },
+  subtitle: { text: 'Try: open Correlations; the two sensors move together, pointing at the bearing' },
+  xAxis: { title: { text: 'Vibration (mm/s)' } },
+  yAxis: { title: { text: 'Temperature (C)' } },
+  legend: { enabled: false },
+  tooltip: { headerFormat: '', pointFormat: '{point.x:.2f} mm/s at {point.y:.1f} C' },
+  series: [{
+    name: 'Daily readings',
+    data: m7.map(function (v, i) { return [v, temperature[i]]; }),
+    marker: { radius: 4 }
+  }]
 });
 
 if (window.Highcharts && Highcharts.orbitPage) {

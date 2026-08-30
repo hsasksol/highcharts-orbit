@@ -78,6 +78,9 @@
     border-radius:8px; padding:10px 14px; font-size:.875rem; margin-bottom:18px;
   }
   :root[data-theme="dark"] #orbit-note { color:#fcd34d; border-color:#92400e; }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:18px; }
+  .grid2 .panel { margin-bottom:0; }
+  @media (max-width: 900px) { .grid2 { grid-template-columns:1fr; } }
   .industry-chip {
     width:40px; height:40px; border-radius:10px; flex:none;
     display:flex; align-items:center; justify-content:center;
@@ -156,9 +159,14 @@
   </div>
 
   <div class="panel"><div id="chart-sales-traffic" class="chart"></div></div>
-  <div class="panel"><div id="chart-devices" class="chart"></div></div>
-  <div class="panel"><div id="chart-sources" class="chart"></div></div>
-  <div class="panel"><div id="chart-abandonment" class="chart"></div></div>
+  <div class="grid2">
+    <div class="panel"><div id="chart-devices" class="chart"></div></div>
+    <div class="panel"><div id="chart-sources" class="chart"></div></div>
+  </div>
+  <div class="grid2">
+    <div class="panel"><div id="chart-abandonment" class="chart"></div></div>
+    <div class="panel"><div id="chart-distribution" class="chart"></div></div>
+  </div>
 
   <footer>Dummy data, generated deterministically for demonstration. Generic store; not any
     real organization's figures.</footer>
@@ -168,6 +176,7 @@
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
 <script src="https://code.highcharts.com/modules/annotations.js"></script>
 <script src="https://code.highcharts.com/modules/streamgraph.js"></script>
+<script src="https://code.highcharts.com/modules/histogram-bellcurve.js"></script>
 <script src="https://orbit.highsoftlabs.com/module/5150599f-09f3-4b54-a398-e60cb01da393/orbit.js"></script>
 <script>
 'use strict';
@@ -284,6 +293,28 @@ Highcharts.chart('chart-abandonment', {
   series: [
     Object.assign(ts(abandonment), { name: 'Cart abandonment' }),
     Object.assign(ts(conversion), { name: 'Conversion rate', yAxis: 1 })
+  ]
+});
+
+Highcharts.chart('chart-distribution', {
+  orbit: {
+    id: 'uc02-distribution',
+    llmContext: { text: ['Distribution of daily sales over the 60-day window. Two separated clusters: most days near 58k USD and the last two weeks near 48k. A distinct lower mode signals a regime change, not gradual noise.'] }
+  },
+  title: { text: 'Distribution of daily sales' },
+  subtitle: { text: 'Try: open Distribution; two clusters mean a regime change, not noise' },
+  xAxis: { title: { text: 'Daily sales (USD thousands)' }, alignTicks: false },
+  yAxis: { title: { text: 'Number of days' } },
+  legend: { enabled: false },
+  series: [
+    {
+      type: 'histogram',
+      name: 'Days',
+      baseSeries: 'raw-sales',
+      binsNumber: 12,
+      tooltip: { pointFormat: '<b>{point.y}</b> days between {point.x:.1f}k and {point.x2:.1f}k' }
+    },
+    { id: 'raw-sales', type: 'scatter', data: sales, visible: false, showInLegend: false }
   ]
 });
 
