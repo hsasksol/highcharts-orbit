@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orbit demo 05: Why did this story attract a huge audience but so few subscribers?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+(function () {
+  var dark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  var el = document.documentElement;
+  el.setAttribute('data-theme', dark ? 'dark' : 'light');
+  el.classList.add(dark ? 'highcharts-dark' : 'highcharts-light');
+})();
+</script>
+<style>
+  /* Design tokens read from www.highcharts.com (verified 2026-08-29) */
+  * { box-sizing: border-box; margin: 0; }
+  :root {
+    --n0:#fff; --n25:#f7f7f8; --n50:#f2f1f4; --n100:#e3e3e8; --n200:#c8c7d1;
+    --n300:#acabba; --n400:#918fa3; --n500:#75738c; --n600:#5e5c70; --n700:#474554;
+    --n800:#2f2e38; --n850:#23222a; --n900:#18171c; --n950:#0a090d;
+    --brand-400:#a5acff; --brand-500:#8791ff; --brand-600:#626bd0; --brand-700:#4a55c9;
+    --page-bg:var(--n50); --card-bg:var(--n0); --text:var(--n900); --muted:var(--n600);
+    --border:var(--n100); --accent:var(--brand-600);
+    --shadow:0 1px 2px rgba(0,0,0,.06), 0 3px 3px rgba(0,0,0,.05);
+  }
+  :root[data-theme="dark"] {
+    --page-bg:var(--n950); --card-bg:var(--n900); --text:var(--n25); --muted:var(--n300);
+    --border:var(--n800); --accent:var(--brand-400);
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 3px 3px rgba(0,0,0,.3);
+  }
+  body {
+    background:var(--page-bg); color:var(--text);
+    font-family:'IBM Plex Sans', sans-serif; line-height:1.3;
+  }
+  header {
+    background:var(--card-bg); border-bottom:1px solid var(--border);
+    display:flex; align-items:center; gap:16px; padding:14px 20px;
+    position:sticky; top:0; z-index:10;
+  }
+  .wordmark { font-weight:700; font-size:1.125rem; }
+  .wordmark span { color:var(--accent); }
+  .demo-tag { color:var(--muted); font-size:.875rem; }
+  #theme-toggle {
+    margin-left:auto; cursor:pointer; font:inherit; font-size:.875rem;
+    color:var(--text); background:transparent; border:1px solid var(--n200);
+    border-radius:8px; padding:8px 12px;
+  }
+  :root[data-theme="dark"] #theme-toggle { border-color:var(--n700); }
+  #theme-toggle:hover { border-color:var(--accent); }
+  main { max-width:1300px; margin:0 auto; padding:32px 20px 64px; }
+  h1 { font-size:2.625rem; font-weight:700; line-height:1.15; margin-bottom:12px; }
+  .setup { color:var(--muted); font-size:1.125rem; max-width:60rem; margin-bottom:24px; }
+  .panel {
+    background:var(--card-bg); border:1px solid var(--border); border-radius:16px;
+    box-shadow:var(--shadow); padding:24px; margin-bottom:18px;
+  }
+  .panel h2 { font-size:1.125rem; font-weight:600; margin-bottom:10px; }
+  .journey { margin:0 0 0 20px; display:grid; gap:8px; font-size:.9375rem; }
+  .journey b { color:var(--accent); }
+  .kpis { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:18px; margin-bottom:18px; }
+  .kpi {
+    background:var(--card-bg); border:1px solid var(--border); border-radius:16px;
+    box-shadow:var(--shadow); padding:18px 20px;
+  }
+  .kpi .label { color:var(--muted); font-size:.75rem; text-transform:uppercase; letter-spacing:.04em; }
+  .kpi .value { font-size:1.75rem; font-weight:700; margin-top:6px; }
+  .kpi .delta { font-size:.875rem; color:var(--muted); margin-top:4px; }
+  .kpi .bad { color:#dc2626; }
+  :root[data-theme="dark"] .kpi .bad { color:#f87171; }
+  .chart { height:380px; }
+  #orbit-note {
+    border:1px solid #d97706; color:#b45309; background:transparent;
+    border-radius:8px; padding:10px 14px; font-size:.875rem; margin-bottom:18px;
+  }
+  :root[data-theme="dark"] #orbit-note { color:#fcd34d; border-color:#92400e; }
+  footer { color:var(--muted); font-size:.8125rem; margin-top:24px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="wordmark">Highcharts <span>Orbit</span></div>
+  <div class="demo-tag">Use case 05 · Publishers / media</div>
+  <button id="theme-toggle" type="button">Toggle light / dark</button>
+</header>
+<main>
+  <h1>Why did this story attract a huge audience but so few subscribers?</h1>
+  <p class="setup">A digital publisher monitors the performance of its articles. The ferry
+    collision investigation received about three times the publisher's normal traffic but
+    generated far fewer subscriptions than expected. Use the Orbit toolbar to understand
+    where the traffic came from and how those readers behaved.</p>
+
+  <div id="orbit-note" hidden>The Orbit toolbar did not load. Serve this page from a domain
+    on the Orbit installation's referrer allowlist; opened from a local file the charts
+    degrade silently to plain Highcharts.</div>
+
+  <div class="panel" data-orbit-context="Investigation journey">
+    <h2>The investigation</h2>
+    <ol class="journey">
+      <li><b>Insights:</b> on the article overview, the ferry story stands out with about 3x the
+        normal traffic but well-below-average subscription conversion.</li>
+      <li><b>Compare articles:</b> its readership is far larger, but reading time and completion
+        rate are much lower than other high-traffic stories.</li>
+      <li><b>Filter / focus:</b> most of the additional traffic came from social media.</li>
+      <li><b>Correlations:</b> reading time and completion relate more strongly to subscriptions
+        than pageviews do.</li>
+      <li><b>Compare sources:</b> newsletter and direct visitors convert at a far higher rate than
+        social visitors.</li>
+      <li><b>Annotate:</b> mark the viral spike and capture the finding for the rest of the team.</li>
+    </ol>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi" data-orbit-context="KPI">
+      <div class="label">Ferry story pageviews, 21 days</div>
+      <div class="value">1.04M</div>
+      <div class="delta">About 3x the site's high-traffic median</div>
+    </div>
+    <div class="kpi" data-orbit-context="KPI">
+      <div class="label">Subscription conversion</div>
+      <div class="value bad">0.11%</div>
+      <div class="delta">Site average 0.48%</div>
+    </div>
+    <div class="kpi" data-orbit-context="KPI">
+      <div class="label">Avg reading time</div>
+      <div class="value bad">1.1 min</div>
+      <div class="delta">Site average 3.8 min</div>
+    </div>
+    <div class="kpi" data-orbit-context="KPI">
+      <div class="label">Traffic from social media</div>
+      <div class="value">59%</div>
+      <div class="delta">612k of 1,044k pageviews</div>
+    </div>
+  </div>
+
+  <div class="panel"><div id="chart-overview" class="chart"></div></div>
+  <div class="panel"><div id="chart-timeline" class="chart"></div></div>
+  <div class="panel"><div id="chart-sources" class="chart" style="height:340px"></div></div>
+  <div class="panel"><div id="chart-source-conversion" class="chart" style="height:340px"></div></div>
+  <div class="panel"><div id="chart-engagement" class="chart"></div></div>
+
+  <footer>Dummy data, generated deterministically for demonstration. Generic publisher and
+    article names; not any real publication's figures.</footer>
+</main>
+
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/annotations.js"></script>
+<script src="https://orbit.highsoftlabs.com/module/5150599f-09f3-4b54-a398-e60cb01da393/orbit.js"></script>
+<script>
+'use strict';
+
+Highcharts.setOptions({
+  chart: { style: { fontFamily: "'IBM Plex Sans', sans-serif" } },
+  palette: {
+    colorScheme: 'light dark',
+    light: { backgroundColor: '#ffffff', neutralColor: '#18171c', highlightColor: '#626bd0' },
+    dark:  { backgroundColor: '#18171c', neutralColor: '#f7f7f8', highlightColor: '#8791ff' },
+    colors: ['#2caffe', '#544fc5', '#00e272', '#fe6a35', '#6b8abc', '#d568fb', '#2ee0ca', '#fa4b42', '#f9c80e']
+  },
+  credits: { enabled: false },
+  title: { align: 'left', style: { fontWeight: '600', fontSize: '18px' } },
+  subtitle: { align: 'left' }
+});
+
+/* Dummy data: twelve articles from the last quarter; the ferry story has 21 daily points ending today (published three weeks ago) with a viral spike on days 3 to 5, deterministic (seeded, pasted as literals).
+   The time axis is anchored so the last point is today: Orbit's page-mode date
+   presets (Today, Last 7d/30d/90d) are relative to the current date and would
+   otherwise select an empty range. */
+var DAY = 24 * 3600 * 1000;
+var TODAY = (function () {
+  var d = new Date();
+  return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+})();
+var articleNames = ['Ferry story', 'Housing', 'Election', 'Climate', 'Layoffs', 'Health', 'Sports', 'Economy', 'Verdict', 'Education', 'Energy', 'Transport'];
+var articleViews = [1044, 298, 312, 244, 286, 178, 325, 152, 268, 134, 212, 121];
+var articleReadTime = [1.1, 3.9, 3.4, 4.2, 3.1, 4.5, 2.7, 4.0, 3.5, 4.8, 3.7, 4.3];
+var articleCompletion = [24, 58, 53, 62, 49, 66, 45, 60, 54, 71, 56, 64];
+var articleSubsPer10k = [11, 52, 44, 57, 38, 61, 29, 55, 41, 66, 49, 58];
+var ferryDailyViews = [18,52,148,236,182,121,74,46,31,24,19,15,13,11,10,9,8,8,7,6,6];
+
+var scatterData = articleNames.map(function (name, i) {
+  return { name: name, x: articleViews[i], y: articleSubsPer10k[i] / 100 };
+});
+
+Highcharts.chart('chart-overview', {
+  chart: { type: 'scatter' },
+  orbit: {
+    id: 'uc05-overview',
+    llmContext: { text: [
+      'Each point is one article from the last quarter: pageviews against subscription conversion. The Ferry story is the outlier with 1.04M pageviews and 0.11% conversion; other high-traffic stories convert between 0.29% and 0.66%.',
+      'The huge audience was driven primarily by social traffic, and those visitors read less of the article and rarely subscribe.'
+    ] }
+  },
+  title: { text: 'Articles: pageviews vs subscription conversion' },
+  subtitle: { text: 'Try: open Insights; one story does not fit the pattern' },
+  xAxis: { title: { text: 'Pageviews (thousands)' }, min: 0 },
+  yAxis: { title: { text: 'Subscription conversion (%)' }, min: 0 },
+  legend: { enabled: false },
+  tooltip: {
+    headerFormat: '',
+    pointFormat: '<b>{point.name}</b><br>{point.x}k pageviews, {point.y:.2f}% conversion'
+  },
+  series: [{
+    name: 'Articles',
+    data: scatterData,
+    marker: { radius: 6 }
+  }]
+});
+
+Highcharts.chart('chart-timeline', {
+  chart: { type: 'areaspline' },
+  orbit: {
+    id: 'uc05-timeline',
+    llmContext: { text: ['Daily pageviews for the Ferry story, published three weeks ago. The viral spike peaks at 236k on day 4, then decays quickly.'] }
+  },
+  title: { text: 'Ferry story: daily pageviews' },
+  subtitle: { text: 'Try: use Annotate to mark the viral spike and capture the finding' },
+  xAxis: { type: 'datetime' },
+  yAxis: { title: { text: 'Pageviews (thousands)' }, min: 0 },
+  legend: { enabled: false },
+  tooltip: { valueSuffix: 'k views' },
+  series: [{
+    name: 'Pageviews',
+    data: ferryDailyViews,
+    pointStart: TODAY - 20 * DAY,
+    pointInterval: DAY,
+    fillOpacity: 0.25
+  }]
+});
+
+Highcharts.chart('chart-sources', {
+  chart: { type: 'column' },
+  orbit: {
+    id: 'uc05-sources',
+    llmContext: { text: ['Ferry story pageviews by traffic source: Social 612k, Search 198k, Direct 122k, Newsletter 62k, Referral 50k.'] }
+  },
+  title: { text: 'Ferry story: pageviews by traffic source' },
+  subtitle: { text: 'Try: open Contribution; social media dominates the audience' },
+  xAxis: { categories: ['Social', 'Search', 'Direct', 'Newsletter', 'Referral'] },
+  yAxis: { title: { text: 'Pageviews (thousands)' } },
+  legend: { enabled: false },
+  tooltip: { valueSuffix: 'k views' },
+  series: [{ name: 'Pageviews', data: [612, 198, 122, 62, 50] }]
+});
+
+Highcharts.chart('chart-source-conversion', {
+  chart: { type: 'column' },
+  orbit: {
+    id: 'uc05-source-conversion',
+    llmContext: { text: ['Subscription conversion by traffic source for the Ferry story. Newsletter converts at 1.9% and Direct at 0.84%, while Social converts at 0.05%.'] }
+  },
+  title: { text: 'Ferry story: subscription conversion by traffic source' },
+  subtitle: { text: 'Try: compare sources; small audiences can be the valuable ones' },
+  xAxis: { categories: ['Social', 'Search', 'Direct', 'Newsletter', 'Referral'] },
+  yAxis: { title: { text: 'Conversion (%)' } },
+  legend: { enabled: false },
+  tooltip: { valueSuffix: '%' },
+  series: [{ name: 'Conversion', data: [0.05, 0.42, 0.84, 1.9, 0.31] }]
+});
+
+Highcharts.chart('chart-engagement', {
+  orbit: {
+    id: 'uc05-engagement',
+    llmContext: { text: ['Engagement metrics per article: reading time, completion rate and subscriptions per 10k readers track each other closely; pageviews do not.'] }
+  },
+  title: { text: 'Engagement metrics by article' },
+  subtitle: { text: 'Try: open Correlations; reading time and completion predict subscriptions, pageviews do not' },
+  xAxis: { categories: articleNames },
+  yAxis: [
+    { title: { text: 'Completion (%) / Subs per 10k' } },
+    { title: { text: 'Reading time (min)' }, opposite: true }
+  ],
+  tooltip: { shared: true },
+  series: [
+    { name: 'Completion rate', type: 'column', data: articleCompletion, tooltip: { valueSuffix: '%' } },
+    { name: 'Subscriptions per 10k readers', type: 'column', data: articleSubsPer10k },
+    { name: 'Avg reading time', type: 'line', yAxis: 1, data: articleReadTime, tooltip: { valueSuffix: ' min' } }
+  ]
+});
+
+if (window.Highcharts && Highcharts.orbitPage) {
+  Highcharts.orbitPage({ mode: 'augment', relationships: { enabled: true } });
+}
+if (!window.Highcharts || !Highcharts.orbit) {
+  document.getElementById('orbit-note').hidden = false;
+}
+
+document.getElementById('theme-toggle').addEventListener('click', function () {
+  var el = document.documentElement;
+  var mode = el.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  el.setAttribute('data-theme', mode);
+  el.classList.toggle('highcharts-dark', mode === 'dark');
+  el.classList.toggle('highcharts-light', mode === 'light');
+});
+</script>
+</body>
+</html>

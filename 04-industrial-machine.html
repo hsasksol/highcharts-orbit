@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orbit demo 04: Is this machine starting to fail?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+(function () {
+  var dark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  var el = document.documentElement;
+  el.setAttribute('data-theme', dark ? 'dark' : 'light');
+  el.classList.add(dark ? 'highcharts-dark' : 'highcharts-light');
+})();
+</script>
+<style>
+  /* Design tokens read from www.highcharts.com (verified 2026-08-29) */
+  * { box-sizing: border-box; margin: 0; }
+  :root {
+    --n0:#fff; --n25:#f7f7f8; --n50:#f2f1f4; --n100:#e3e3e8; --n200:#c8c7d1;
+    --n300:#acabba; --n400:#918fa3; --n500:#75738c; --n600:#5e5c70; --n700:#474554;
+    --n800:#2f2e38; --n850:#23222a; --n900:#18171c; --n950:#0a090d;
+    --brand-400:#a5acff; --brand-500:#8791ff; --brand-600:#626bd0; --brand-700:#4a55c9;
+    --page-bg:var(--n50); --card-bg:var(--n0); --text:var(--n900); --muted:var(--n600);
+    --border:var(--n100); --accent:var(--brand-600);
+    --shadow:0 1px 2px rgba(0,0,0,.06), 0 3px 3px rgba(0,0,0,.05);
+  }
+  :root[data-theme="dark"] {
+    --page-bg:var(--n950); --card-bg:var(--n900); --text:var(--n25); --muted:var(--n300);
+    --border:var(--n800); --accent:var(--brand-400);
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 3px 3px rgba(0,0,0,.3);
+  }
+  body {
+    background:var(--page-bg); color:var(--text);
+    font-family:'IBM Plex Sans', sans-serif; line-height:1.3;
+  }
+  header {
+    background:var(--card-bg); border-bottom:1px solid var(--border);
+    display:flex; align-items:center; gap:16px; padding:14px 20px;
+    position:sticky; top:0; z-index:10;
+  }
+  .wordmark { font-weight:700; font-size:1.125rem; }
+  .wordmark span { color:var(--accent); }
+  .demo-tag { color:var(--muted); font-size:.875rem; }
+  #theme-toggle {
+    margin-left:auto; cursor:pointer; font:inherit; font-size:.875rem;
+    color:var(--text); background:transparent; border:1px solid var(--n200);
+    border-radius:8px; padding:8px 12px;
+  }
+  :root[data-theme="dark"] #theme-toggle { border-color:var(--n700); }
+  #theme-toggle:hover { border-color:var(--accent); }
+  main { max-width:1300px; margin:0 auto; padding:32px 20px 64px; }
+  h1 { font-size:2.625rem; font-weight:700; line-height:1.15; margin-bottom:12px; }
+  .setup { color:var(--muted); font-size:1.125rem; max-width:60rem; margin-bottom:24px; }
+  .panel {
+    background:var(--card-bg); border:1px solid var(--border); border-radius:16px;
+    box-shadow:var(--shadow); padding:24px; margin-bottom:18px;
+  }
+  .panel h2 { font-size:1.125rem; font-weight:600; margin-bottom:10px; }
+  .journey { margin:0 0 0 20px; display:grid; gap:8px; font-size:.9375rem; }
+  .journey b { color:var(--accent); }
+  .kpis { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:18px; margin-bottom:18px; }
+  .kpi {
+    background:var(--card-bg); border:1px solid var(--border); border-radius:16px;
+    box-shadow:var(--shadow); padding:18px 20px;
+  }
+  .kpi .label { color:var(--muted); font-size:.75rem; text-transform:uppercase; letter-spacing:.04em; }
+  .kpi .value { font-size:1.75rem; font-weight:700; margin-top:6px; }
+  .kpi .delta { font-size:.875rem; color:var(--muted); margin-top:4px; }
+  .kpi .bad { color:#dc2626; }
+  :root[data-theme="dark"] .kpi .bad { color:#f87171; }
+  .chart { height:380px; }
+  #orbit-note {
+    border:1px solid #d97706; color:#b45309; background:transparent;
+    border-radius:8px; padding:10px 14px; font-size:.875rem; margin-bottom:18px;
+  }
+  :root[data-theme="dark"] #orbit-note { color:#fcd34d; border-color:#92400e; }
+  .note { font-size:.9375rem; color:var(--muted); }
+  footer { color:var(--muted); font-size:.8125rem; margin-top:24px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="wordmark">Highcharts <span>Orbit</span></div>
+  <div class="demo-tag">Use case 04 · Scientific / industrial</div>
+  <button id="theme-toggle" type="button">Toggle light / dark</button>
+</header>
+<main>
+  <h1>Is this machine starting to fail?</h1>
+  <p class="setup">A manufacturing plant monitors sensor data from equipment on a production
+    line. Machine 7 is still operating normally, but its sensor readings have begun to change.
+    Use the Orbit toolbar on each chart to judge whether this is an early warning.</p>
+
+  <div id="orbit-note" hidden>The Orbit toolbar did not load. Serve this page from a domain
+    on the Orbit installation's referrer allowlist; opened from a local file the charts
+    degrade silently to plain Highcharts.</div>
+
+  <div class="panel" data-orbit-context="Investigation journey">
+    <h2>The investigation</h2>
+    <ol class="journey">
+      <li><b>Control limits:</b> apply control limits to Machine 7's vibration; readings approach
+        and then exceed its normal operating range.</li>
+      <li><b>Anomaly detection:</b> Orbit flags an unusual pattern of vibration spikes not present
+        in the other machines.</li>
+      <li><b>Compare machines:</b> Machines 5, 6 and 8 run under similar loads and stay within range.</li>
+      <li><b>Correlations:</b> as vibration increases, temperature and power consumption rise as well.</li>
+      <li><b>Forecast:</b> project the vibration trend forward; readings move further outside the limits.</li>
+      <li><b>Annotate:</b> mark the drift onset and note the similarity to the period before the
+        previous maintenance event.</li>
+    </ol>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi" data-orbit-context="KPI">
+      <div class="label">Machine 7 vibration, last 7 days</div>
+      <div class="value bad">3.3 mm/s</div>
+      <div class="delta">Baseline 2.1 mm/s</div>
+    </div>
+    <div class="kpi" data-orbit-context="KPI">
+      <div class="label">Days above upper control limit (2.55 mm/s)</div>
+      <div class="value bad">13 of last 20</div>
+      <div class="delta">0 in the prior 40 days</div>
+    </div>
+    <div class="kpi" data-orbit-context="KPI">
+      <div class="label">Machine 7 bearing temperature</div>
+      <div class="value bad">70.1 °C</div>
+      <div class="delta">Baseline 58.5 °C</div>
+    </div>
+    <div class="kpi" data-orbit-context="KPI">
+      <div class="label">Machines 5, 6 and 8</div>
+      <div class="value">In range</div>
+      <div class="delta">Similar load, normal vibration</div>
+    </div>
+  </div>
+
+  <div class="panel" data-orbit-context="Maintenance history">
+    <p class="note"><strong>Maintenance history:</strong> Machine 7's bearing was last replaced
+      about five months ago. In the three weeks before that event, vibration showed a similar slow
+      drift with intermittent spikes. Machines 5, 6 and 8 have no open maintenance findings.</p>
+  </div>
+
+  <div class="panel"><div id="chart-m7" class="chart"></div></div>
+  <div class="panel"><div id="chart-machines" class="chart"></div></div>
+  <div class="panel"><div id="chart-sensors" class="chart"></div></div>
+
+  <footer>Dummy data, generated deterministically for demonstration. Generic plant and
+    machines; not any real facility's readings.</footer>
+</main>
+
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/annotations.js"></script>
+<script src="https://orbit.highsoftlabs.com/module/5150599f-09f3-4b54-a398-e60cb01da393/orbit.js"></script>
+<script>
+'use strict';
+
+Highcharts.setOptions({
+  chart: { style: { fontFamily: "'IBM Plex Sans', sans-serif" } },
+  palette: {
+    colorScheme: 'light dark',
+    light: { backgroundColor: '#ffffff', neutralColor: '#18171c', highlightColor: '#626bd0' },
+    dark:  { backgroundColor: '#18171c', neutralColor: '#f7f7f8', highlightColor: '#8791ff' },
+    colors: ['#2caffe', '#544fc5', '#00e272', '#fe6a35', '#6b8abc', '#d568fb', '#2ee0ca', '#fa4b42', '#f9c80e']
+  },
+  credits: { enabled: false },
+  title: { align: 'left', style: { fontWeight: '600', fontSize: '18px' } },
+  subtitle: { align: 'left' }
+});
+
+/* Dummy data: 60 daily points ending today; Machine 7's drift begins about 18 days before the end, deliberate spikes 7 and 2 days before the end, deterministic (seeded, pasted as literals).
+   The time axis is anchored so the last point is today: Orbit's page-mode date
+   presets (Today, Last 7d/30d/90d) are relative to the current date and would
+   otherwise select an empty range. */
+var DAY = 24 * 3600 * 1000;
+var TODAY = (function () {
+  var d = new Date();
+  return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+})();
+var START = TODAY - 59 * DAY;
+var m7 = [2.19,2.14,2.18,2.01,2.04,2.19,2.15,2.01,2.15,2.09,1.97,1.99,2.04,2.19,2.11,2.16,2.11,2,2.04,2.05,1.98,2.08,2.18,2.09,2,2.21,2.13,1.97,2.1,2.03,2.01,2.08,2.13,2.03,2.08,2.14,1.99,2.22,1.99,2.11,2.17,2.34,2.31,2.33,2.41,2.51,2.65,2.55,2.56,2.79,2.76,2.91,3.82,3.04,3.09,3.07,3.06,4.12,3.36,3.28];
+var m5 = [2.12,2.04,2.1,2.08,2.12,1.95,2.12,2.04,2,1.94,1.98,1.94,2.15,2.05,2.17,2.06,1.99,2.11,1.98,2.02,2.12,2.14,2.01,1.96,2.02,2.14,2.11,2.14,2.02,2.16,2.05,2.05,2.15,2.05,2.12,2.1,1.95,2.07,2.13,2.06,2.01,1.95,2.09,2,2.07,2.03,2.1,2.01,1.94,2.14,2.01,2.17,2,2.17,2.16,1.95,2.08,2.02,2.12,2.09];
+var m6 = [2.29,2.09,2.21,2.25,2.07,2.08,2.25,2.15,2.15,2.2,2.21,2.22,2.29,2.15,2.24,2.2,2.19,2.16,2.22,2.12,2.09,2.24,2.18,2.15,2.19,2.12,2.12,2.17,2.3,2.13,2.28,2.18,2.09,2.26,2.17,2.28,2.17,2.08,2.22,2.26,2.14,2.14,2.08,2.19,2.27,2.26,2.23,2.28,2.21,2.25,2.18,2.09,2.11,2.09,2.25,2.07,2.19,2.15,2.25,2.19];
+var m8 = [2.15,2.02,2.07,2.24,2.17,2.13,2.18,2.2,2.02,2.23,2.15,2.11,2.16,2.08,2.21,2.19,2.15,2.04,2.23,2.1,2.22,2.01,2.03,2.04,2.04,2.08,2.17,2.08,2.23,2.21,2.2,2.06,2.15,2.13,2.03,2.07,2.13,2.12,2.04,2.23,2.04,2.16,2.17,2.15,2.2,2.14,2.2,2.01,2.01,2.15,2.14,2.16,2.18,2.1,2.15,2.12,2.15,2.07,2.23,2.12];
+var temperature = [59.2,58.1,57.5,58.5,58.7,59,59.3,57.7,58.6,58.4,57.9,58,58.8,59.3,58.1,58.1,58.5,58.5,57.5,58.5,57.9,57.5,59.3,58.4,59.3,59.3,59.1,58.3,57.8,57.6,59.1,59.6,57.7,58.3,58.1,59.1,58.5,57.5,58.1,58.4,59.1,59.9,61.3,60.5,62.2,62.5,63.3,63.6,64.1,65,64.2,66.6,66.9,67.3,66.8,68.3,68,68.4,69.1,70.1];
+var power = [41.5,40.6,41.1,40.8,40.9,41.5,41.9,41,40.9,40.9,40.6,41,40.8,40.7,41.3,41.6,41.2,40.9,41.8,41.9,41,41.2,41.4,41.3,41.1,41.5,41,41.3,41.3,41.2,40.9,41.5,41.9,41.6,41.8,40.8,41.2,40.7,41.2,41.3,41.3,41.5,42.5,42.3,42.9,42.9,43.4,44.4,44.5,44.7,44.8,45.5,45.6,45.9,46.3,46.9,47,47.7,46.9,47.4];
+
+function ts(data) { return { data: data, pointStart: START, pointInterval: DAY }; }
+
+Highcharts.chart('chart-m7', {
+  orbit: {
+    id: 'uc04-m7-vibration',
+    llmContext: { text: [
+      'Daily mean vibration for Machine 7 on a production line. Baseline is 2.1 mm/s; over the last three weeks readings drift upward past the 2.55 mm/s upper control limit, with spikes of 3.82 and 4.12 mm/s in the last week.',
+      'A similar drift preceded the bearing replacement about five months ago. Machines 5, 6 and 8 run under similar loads and remain in range.'
+    ] }
+  },
+  title: { text: 'Machine 7: vibration (daily mean)' },
+  subtitle: { text: 'Try: open Control limits, then Anomaly detection, then Forecast' },
+  xAxis: { type: 'datetime' },
+  yAxis: { title: { text: 'Vibration (mm/s)' } },
+  tooltip: { valueSuffix: ' mm/s' },
+  series: [
+    Object.assign(ts(m7), { name: 'Machine 7 vibration' })
+  ]
+});
+
+Highcharts.chart('chart-machines', {
+  orbit: {
+    id: 'uc04-machines',
+    llmContext: { text: ['Vibration for Machines 5 to 8 under similar loads. Only Machine 7 drifts out of its normal range.'] }
+  },
+  title: { text: 'Vibration across machines 5 to 8' },
+  subtitle: { text: 'Try: compare the four series; only Machine 7 deviates' },
+  xAxis: { type: 'datetime' },
+  yAxis: { title: { text: 'Vibration (mm/s)' } },
+  tooltip: { shared: true, valueSuffix: ' mm/s' },
+  series: [
+    Object.assign(ts(m5), { name: 'Machine 5' }),
+    Object.assign(ts(m6), { name: 'Machine 6' }),
+    Object.assign(ts(m7), { name: 'Machine 7' }),
+    Object.assign(ts(m8), { name: 'Machine 8' })
+  ]
+});
+
+Highcharts.chart('chart-sensors', {
+  orbit: {
+    id: 'uc04-sensors',
+    llmContext: { text: ['Machine 7 sensor overview: vibration, bearing temperature and power consumption all begin rising together over the last three weeks.'] }
+  },
+  title: { text: 'Machine 7: vibration, temperature and power consumption' },
+  subtitle: { text: 'Try: open Correlations; the three sensors rise together' },
+  xAxis: { type: 'datetime' },
+  yAxis: [
+    { title: { text: 'Vibration (mm/s)' } },
+    { title: { text: 'Temperature (°C)' }, opposite: true },
+    { title: { text: 'Power (kW)' }, opposite: true }
+  ],
+  tooltip: { shared: true },
+  series: [
+    Object.assign(ts(m7), { name: 'Vibration', tooltip: { valueSuffix: ' mm/s' } }),
+    Object.assign(ts(temperature), { name: 'Bearing temperature', yAxis: 1, tooltip: { valueSuffix: ' °C' } }),
+    Object.assign(ts(power), { name: 'Power consumption', yAxis: 2, tooltip: { valueSuffix: ' kW' } })
+  ]
+});
+
+if (window.Highcharts && Highcharts.orbitPage) {
+  Highcharts.orbitPage({ mode: 'augment', relationships: { enabled: true } });
+}
+if (!window.Highcharts || !Highcharts.orbit) {
+  document.getElementById('orbit-note').hidden = false;
+}
+
+document.getElementById('theme-toggle').addEventListener('click', function () {
+  var el = document.documentElement;
+  var mode = el.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  el.setAttribute('data-theme', mode);
+  el.classList.toggle('highcharts-dark', mode === 'dark');
+  el.classList.toggle('highcharts-light', mode === 'light');
+});
+</script>
+</body>
+</html>

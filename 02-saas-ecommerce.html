@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orbit demo 02: Why did my online sales suddenly drop?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+(function () {
+  var dark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  var el = document.documentElement;
+  el.setAttribute('data-theme', dark ? 'dark' : 'light');
+  el.classList.add(dark ? 'highcharts-dark' : 'highcharts-light');
+})();
+</script>
+<style>
+  /* Design tokens read from www.highcharts.com (verified 2026-08-29) */
+  * { box-sizing: border-box; margin: 0; }
+  :root {
+    --n0:#fff; --n25:#f7f7f8; --n50:#f2f1f4; --n100:#e3e3e8; --n200:#c8c7d1;
+    --n300:#acabba; --n400:#918fa3; --n500:#75738c; --n600:#5e5c70; --n700:#474554;
+    --n800:#2f2e38; --n850:#23222a; --n900:#18171c; --n950:#0a090d;
+    --brand-400:#a5acff; --brand-500:#8791ff; --brand-600:#626bd0; --brand-700:#4a55c9;
+    --page-bg:var(--n50); --card-bg:var(--n0); --text:var(--n900); --muted:var(--n600);
+    --border:var(--n100); --accent:var(--brand-600);
+    --shadow:0 1px 2px rgba(0,0,0,.06), 0 3px 3px rgba(0,0,0,.05);
+  }
+  :root[data-theme="dark"] {
+    --page-bg:var(--n950); --card-bg:var(--n900); --text:var(--n25); --muted:var(--n300);
+    --border:var(--n800); --accent:var(--brand-400);
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 3px 3px rgba(0,0,0,.3);
+  }
+  body {
+    background:var(--page-bg); color:var(--text);
+    font-family:'IBM Plex Sans', sans-serif; line-height:1.3;
+  }
+  header {
+    background:var(--card-bg); border-bottom:1px solid var(--border);
+    display:flex; align-items:center; gap:16px; padding:14px 20px;
+    position:sticky; top:0; z-index:10;
+  }
+  .wordmark { font-weight:700; font-size:1.125rem; }
+  .wordmark span { color:var(--accent); }
+  .demo-tag { color:var(--muted); font-size:.875rem; }
+  #theme-toggle {
+    margin-left:auto; cursor:pointer; font:inherit; font-size:.875rem;
+    color:var(--text); background:transparent; border:1px solid var(--n200);
+    border-radius:8px; padding:8px 12px;
+  }
+  :root[data-theme="dark"] #theme-toggle { border-color:var(--n700); }
+  #theme-toggle:hover { border-color:var(--accent); }
+  main { max-width:1300px; margin:0 auto; padding:32px 20px 64px; }
+  h1 { font-size:2.625rem; font-weight:700; line-height:1.15; margin-bottom:12px; }
+  .setup { color:var(--muted); font-size:1.125rem; max-width:60rem; margin-bottom:24px; }
+  .panel {
+    background:var(--card-bg); border:1px solid var(--border); border-radius:16px;
+    box-shadow:var(--shadow); padding:24px; margin-bottom:18px;
+  }
+  .panel h2 { font-size:1.125rem; font-weight:600; margin-bottom:10px; }
+  .journey { margin:0 0 0 20px; display:grid; gap:8px; font-size:.9375rem; }
+  .journey b { color:var(--accent); }
+  .kpis { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:18px; margin-bottom:18px; }
+  .kpi {
+    background:var(--card-bg); border:1px solid var(--border); border-radius:16px;
+    box-shadow:var(--shadow); padding:18px 20px;
+  }
+  .kpi .label { color:var(--muted); font-size:.75rem; text-transform:uppercase; letter-spacing:.04em; }
+  .kpi .value { font-size:1.75rem; font-weight:700; margin-top:6px; }
+  .kpi .delta { font-size:.875rem; color:var(--muted); margin-top:4px; }
+  .kpi .bad { color:#dc2626; }
+  :root[data-theme="dark"] .kpi .bad { color:#f87171; }
+  .chart { height:380px; }
+  #orbit-note {
+    border:1px solid #d97706; color:#b45309; background:transparent;
+    border-radius:8px; padding:10px 14px; font-size:.875rem; margin-bottom:18px;
+  }
+  :root[data-theme="dark"] #orbit-note { color:#fcd34d; border-color:#92400e; }
+  footer { color:var(--muted); font-size:.8125rem; margin-top:24px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="wordmark">Highcharts <span>Orbit</span></div>
+  <div class="demo-tag">Use case 02 · Embedded / customer-facing / SaaS</div>
+  <button id="theme-toggle" type="button">Toggle light / dark</button>
+</header>
+<main>
+  <h1>Why did my online sales suddenly drop?</h1>
+  <p class="setup">An e-commerce analytics platform gives merchants a dashboard for monitoring
+    their stores. This merchant sees a sudden drop in sales despite normal website traffic.
+    Use the Orbit toolbar on each chart to investigate what changed.</p>
+
+  <div id="orbit-note" hidden>The Orbit toolbar did not load. Serve this page from a domain
+    on the Orbit installation's referrer allowlist; opened from a local file the charts
+    degrade silently to plain Highcharts.</div>
+
+  <div class="panel" data-orbit-context="Investigation journey">
+    <h2>The investigation</h2>
+    <ol class="journey">
+      <li><b>Insights:</b> on the sales chart, let Orbit highlight the two-week period where
+        sales fall about 18% while traffic stays steady.</li>
+      <li><b>Compare devices:</b> mobile sales decline sharply while desktop stays normal.</li>
+      <li><b>Filter / focus:</b> within mobile, Paid Search accounts for most of the decline.</li>
+      <li><b>Anomaly detection:</b> cart abandonment for Mobile + Paid Search visitors spikes in the same period.</li>
+      <li><b>Correlations:</b> as abandonment rises, conversion rate falls.</li>
+      <li><b>Forecast:</b> project sales forward to estimate the impact if the trend continues.</li>
+    </ol>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi" data-orbit-context="KPI">
+      <div class="label">Daily sales, last 14 days</div>
+      <div class="value bad">$48.0k</div>
+      <div class="delta">Baseline $58k, down 18%</div>
+    </div>
+    <div class="kpi" data-orbit-context="KPI">
+      <div class="label">Daily sessions</div>
+      <div class="value">24.2k</div>
+      <div class="delta">Steady, no change vs baseline</div>
+    </div>
+    <div class="kpi" data-orbit-context="KPI">
+      <div class="label">Cart abandonment, Mobile + Paid Search</div>
+      <div class="value bad">80.4%</div>
+      <div class="delta">Baseline 68%</div>
+    </div>
+    <div class="kpi" data-orbit-context="KPI">
+      <div class="label">Conversion rate</div>
+      <div class="value bad">2.4%</div>
+      <div class="delta">Baseline 3.25%</div>
+    </div>
+  </div>
+
+  <div class="panel"><div id="chart-sales-traffic" class="chart"></div></div>
+  <div class="panel"><div id="chart-devices" class="chart"></div></div>
+  <div class="panel"><div id="chart-sources" class="chart"></div></div>
+  <div class="panel"><div id="chart-abandonment" class="chart"></div></div>
+
+  <footer>Dummy data, generated deterministically for demonstration. Generic store; not any
+    real organization's figures.</footer>
+</main>
+
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/annotations.js"></script>
+<script src="https://orbit.highsoftlabs.com/module/5150599f-09f3-4b54-a398-e60cb01da393/orbit.js"></script>
+<script>
+'use strict';
+
+Highcharts.setOptions({
+  chart: { style: { fontFamily: "'IBM Plex Sans', sans-serif" } },
+  palette: {
+    colorScheme: 'light dark',
+    light: { backgroundColor: '#ffffff', neutralColor: '#18171c', highlightColor: '#626bd0' },
+    dark:  { backgroundColor: '#18171c', neutralColor: '#f7f7f8', highlightColor: '#8791ff' },
+    colors: ['#2caffe', '#544fc5', '#00e272', '#fe6a35', '#6b8abc', '#d568fb', '#2ee0ca', '#fa4b42', '#f9c80e']
+  },
+  credits: { enabled: false },
+  title: { align: 'left', style: { fontWeight: '600', fontSize: '18px' } },
+  subtitle: { align: 'left' }
+});
+
+/* Dummy data: 60 daily points ending today; the drop begins 14 days before the end, deterministic (seeded, pasted as literals).
+   The time axis is anchored so the last point is today: Orbit's page-mode date
+   presets (Today, Last 7d/30d/90d) are relative to the current date and would
+   otherwise select an empty range. */
+var DAY = 24 * 3600 * 1000;
+var TODAY = (function () {
+  var d = new Date();
+  return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+})();
+var START = TODAY - 59 * DAY;
+var sales = [57.1,58.1,57.5,58.2,58.5,57.3,58.3,57.5,58,58.9,58.8,57.1,57.8,57.5,56.9,58.6,58.3,57.5,58.5,58.1,57.8,56.9,57.1,58.8,58.9,58.1,58.7,58.2,57.2,57.2,57.6,58.9,58.7,58.8,58.9,57.4,57.4,57.1,58.6,58.8,57.8,58.3,57.2,58.9,58.8,59,56.1,53.6,49.2,48.1,47.1,48.4,48.2,48.3,48.2,47,48.1,46.6,48.3,48.3];
+var sessions = [24.3,24.6,23.6,23.8,25,24.3,24.3,24.6,23.4,24.4,24.2,24.8,23.6,25,23.4,23.6,24.4,24.5,23.7,23.5,24.9,23.7,24.4,24.4,24.1,24.4,24.2,25,23.7,24.6,23.7,24,24.5,23.8,23.9,24.7,23.4,24.1,25.1,25.1,23.4,23.7,23.8,25,24.9,24.9,24,23.6,24.8,24.6,24.4,25.1,24.5,23.3,24.8,23.8,24.5,25,23.5,23.5];
+var mobileSales = [25.6,25.9,26.4,25.3,25.8,26.7,26.2,26.7,26.6,26.7,26.6,25.5,26.3,26.1,25.8,25.7,25.3,26.1,26.3,25.8,26.2,25.7,26.3,25.7,25.9,25.5,26.6,26.6,25.7,25.3,25.9,26.2,25.9,26,26.4,25.4,26.2,26.4,26.2,25.6,25.6,26.5,25.9,25.6,26,26.2,24.2,21,18.9,17.2,16.8,17.1,17.4,17.3,17.7,17.5,17.7,17.8,17.2,16.8];
+var desktopSales = [32.6,31.6,31.5,31.4,32.7,31.6,31.8,32.1,31.3,31.4,31.6,31.9,31.7,32,32.1,32.4,32.8,32.4,32.3,31.2,31.7,32.6,31.6,31.8,31.6,31.9,32.3,32.2,32.1,31.6,32.1,31.9,31.5,32.7,31.4,32,31.7,32.5,31.5,31.1,32,31.2,32.2,32.4,31.5,31.1,32.5,31.9,32.8,31.2,32.6,32.5,32.9,32.8,32.2,32,32.1,32.4,31.6,32.2];
+var srcPaidSearch = [11.3,10.6,11,11.2,10.9,11.1,10.9,11.4,11,10.9,10.9,11.1,10.5,10.6,11.3,10.8,11.5,11.2,10.5,11.1,10.7,11.3,10.8,11.2,10.6,10.6,10.9,11.3,11.1,11.2,11,10.8,11.4,10.9,10.7,11.2,10.6,11.2,10.6,11.1,11.2,10.8,11,11,10.8,10.7,9.9,8.2,6.2,5,4.2,4.7,4.9,4.6,5.1,4.8,4.8,4.1,4.3,4.8];
+var srcOrganic = [8.1,7.9,7.8,7.8,7.9,8.3,7.7,8.5,8.2,7.7,7.8,7.7,8.2,8,8,7.8,8,8.3,7.8,7.9,8.2,8.5,8.2,7.8,8.3,8.5,8,8.4,8.4,8.5,8.1,8.4,7.9,7.7,8.3,7.9,8.3,8.2,7.9,8.1,8,7.8,8.3,8.3,7.8,7.7,8.1,8.1,8.1,8.1,8.2,7.9,8.2,8.1,7.9,8.5,7.8,8.1,8.3,8.4];
+var srcSocial = [4.1,3.8,3.8,3.9,3.9,4.2,3.9,3.9,3.8,3.9,4,3.9,3.7,3.8,4.2,3.7,4.1,4.3,3.7,4.1,4.2,3.7,4.3,4.1,4.2,4.2,4,3.7,4.1,3.8,4,4.2,4,4.2,3.9,3.7,4,4,4.1,4,4.1,3.8,3.8,4.3,3.8,4,4.1,4.3,3.8,4.2,3.7,4.3,4.2,4,4.1,3.8,3.8,4.1,4.1,4.2];
+var srcDirect = [3,3,3.2,3.1,3.3,3.2,3.2,3.2,3,3.2,2.9,3.1,3.1,3,3.3,3.1,3.2,2.9,3.2,3.2,2.9,2.9,3,3.2,3.2,3,3,3.3,3.1,3.3,3.2,2.9,3.2,2.9,3.3,3.3,3.2,3.2,3,3.1,3,2.9,3,3.1,3,3,2.9,3.1,2.9,3.1,2.9,2.9,3,3.3,3.2,3,2.9,3,3.1,3.2];
+var abandonment = [68.4,67.8,68.4,68.8,67.2,68.6,67.5,68.5,69.1,68,66.9,67.6,67,68.8,69.1,68.4,66.9,67.9,69,68.2,68,67.6,68.4,67.6,67.5,68.8,67.9,67.6,67.8,69.2,68.1,67.3,68.6,68.6,68.1,67.9,67.1,68.3,67.2,68.1,69.2,67.9,68.8,68.5,67.5,69.2,71.1,75,77.9,79.5,80.3,80.5,80,80.7,80.5,80.6,80.6,80.4,79.8,80.7];
+var conversion = [3.33,3.26,3.32,3.17,3.22,3.26,3.18,3.29,3.25,3.17,3.24,3.21,3.33,3.26,3.34,3.21,3.3,3.28,3.19,3.27,3.18,3.22,3.31,3.28,3.33,3.26,3.22,3.33,3.25,3.28,3.23,3.23,3.27,3.2,3.33,3.29,3.34,3.2,3.26,3.18,3.32,3.18,3.25,3.25,3.31,3.2,3.03,2.85,2.72,2.5,2.5,2.48,2.38,2.51,2.36,2.39,2.43,2.39,2.46,2.37];
+
+function ts(data) { return { data: data, pointStart: START, pointInterval: DAY }; }
+
+Highcharts.chart('chart-sales-traffic', {
+  orbit: {
+    id: 'uc02-sales-traffic',
+    llmContext: { text: [
+      'Merchant store dashboard on an e-commerce analytics platform. Daily sales fall about 18% over the last two weeks while daily sessions stay steady around 24k.',
+      'The decline is later traced to mobile visitors arriving through Paid Search, coinciding with unusually high cart abandonment.'
+    ] }
+  },
+  title: { text: 'Daily sales vs website sessions' },
+  subtitle: { text: 'Try: open Insights to highlight the drop, then Forecast to project it forward' },
+  xAxis: { type: 'datetime' },
+  yAxis: [
+    { title: { text: 'Sales (USD thousands)' } },
+    { title: { text: 'Sessions (thousands)' }, opposite: true, min: 0 }
+  ],
+  tooltip: { shared: true },
+  series: [
+    Object.assign(ts(sales), { name: 'Sales', tooltip: { valuePrefix: '$', valueSuffix: 'k' } }),
+    Object.assign(ts(sessions), { name: 'Sessions', yAxis: 1, dashStyle: 'ShortDash', tooltip: { valueSuffix: 'k' } })
+  ]
+});
+
+Highcharts.chart('chart-devices', {
+  orbit: {
+    id: 'uc02-devices',
+    llmContext: { text: ['Daily sales split by device. Mobile falls from about 26k to 17k USD; desktop is unchanged around 32k USD.'] }
+  },
+  title: { text: 'Sales by device' },
+  subtitle: { text: 'Try: compare the two series; mobile carries the whole decline' },
+  xAxis: { type: 'datetime' },
+  yAxis: { title: { text: 'Sales (USD thousands)' }, min: 0 },
+  tooltip: { shared: true, valuePrefix: '$', valueSuffix: 'k' },
+  series: [
+    Object.assign(ts(mobileSales), { name: 'Mobile' }),
+    Object.assign(ts(desktopSales), { name: 'Desktop' })
+  ]
+});
+
+Highcharts.chart('chart-sources', {
+  orbit: {
+    id: 'uc02-sources',
+    llmContext: { text: ['Mobile sales split by traffic source. Paid Search falls from about 11k to under 5k USD; Organic, Social and Direct are flat.'] }
+  },
+  title: { text: 'Mobile sales by traffic source' },
+  subtitle: { text: 'Try: use Filter to focus on Paid Search' },
+  xAxis: { type: 'datetime' },
+  yAxis: { title: { text: 'Sales (USD thousands)' }, min: 0 },
+  tooltip: { shared: true, valuePrefix: '$', valueSuffix: 'k' },
+  series: [
+    Object.assign(ts(srcPaidSearch), { name: 'Paid Search' }),
+    Object.assign(ts(srcOrganic), { name: 'Organic' }),
+    Object.assign(ts(srcSocial), { name: 'Social' }),
+    Object.assign(ts(srcDirect), { name: 'Direct' })
+  ]
+});
+
+Highcharts.chart('chart-abandonment', {
+  orbit: {
+    id: 'uc02-abandonment',
+    llmContext: { text: ['Cart abandonment rate for Mobile + Paid Search visitors jumps from 68% to over 80% in the same period, while store conversion rate falls from 3.25% to 2.4%.'] }
+  },
+  title: { text: 'Cart abandonment (Mobile + Paid Search) vs conversion rate' },
+  subtitle: { text: 'Try: open Anomaly detection on abandonment, then Correlations against conversion' },
+  xAxis: { type: 'datetime' },
+  yAxis: [
+    { title: { text: 'Abandonment (%)' } },
+    { title: { text: 'Conversion (%)' }, opposite: true }
+  ],
+  tooltip: { shared: true, valueSuffix: '%' },
+  series: [
+    Object.assign(ts(abandonment), { name: 'Cart abandonment' }),
+    Object.assign(ts(conversion), { name: 'Conversion rate', yAxis: 1 })
+  ]
+});
+
+if (window.Highcharts && Highcharts.orbitPage) {
+  Highcharts.orbitPage({ mode: 'augment', relationships: { enabled: true } });
+}
+if (!window.Highcharts || !Highcharts.orbit) {
+  document.getElementById('orbit-note').hidden = false;
+}
+
+document.getElementById('theme-toggle').addEventListener('click', function () {
+  var el = document.documentElement;
+  var mode = el.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  el.setAttribute('data-theme', mode);
+  el.classList.toggle('highcharts-dark', mode === 'dark');
+  el.classList.toggle('highcharts-light', mode === 'light');
+});
+</script>
+</body>
+</html>
