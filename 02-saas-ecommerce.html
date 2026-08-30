@@ -26,6 +26,7 @@
     --page-bg:var(--n50); --card-bg:var(--n0); --text:var(--n900); --muted:var(--n600);
     --border:var(--n100); --accent:var(--brand-600);
     --shadow:0 1px 2px rgba(0,0,0,.06), 0 3px 3px rgba(0,0,0,.05);
+    --demo-accent:#00e272;
   }
   :root[data-theme="dark"] {
     --page-bg:var(--n950); --card-bg:var(--n900); --text:var(--n25); --muted:var(--n300);
@@ -77,12 +78,21 @@
     border-radius:8px; padding:10px 14px; font-size:.875rem; margin-bottom:18px;
   }
   :root[data-theme="dark"] #orbit-note { color:#fcd34d; border-color:#92400e; }
+  .industry-chip {
+    width:40px; height:40px; border-radius:10px; flex:none;
+    display:flex; align-items:center; justify-content:center;
+    background:color-mix(in srgb, var(--demo-accent) 14%, transparent);
+    color:color-mix(in srgb, var(--demo-accent) 62%, var(--n900));
+  }
+  :root[data-theme="dark"] .industry-chip { color:color-mix(in srgb, var(--demo-accent) 75%, #fff); }
+  .industry-chip svg { width:22px; height:22px; display:block; }
   footer { color:var(--muted); font-size:.8125rem; margin-top:24px; }
 </style>
 </head>
 <body>
 <header>
   <div class="wordmark">Highcharts <span>Orbit</span></div>
+  <div class="industry-chip" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.6"/><circle cx="17" cy="20" r="1.6"/><path d="M3 4h2l2.6 12h10.8L21 8H6.4"/></svg></div>
   <div class="demo-tag">Use case 02 · Embedded / customer-facing / SaaS</div>
   <button id="theme-toggle" type="button">Toggle light / dark</button>
 </header>
@@ -144,6 +154,7 @@
 <script src="https://code.highcharts.com/highcharts.js"></script>
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
 <script src="https://code.highcharts.com/modules/annotations.js"></script>
+<script src="https://code.highcharts.com/modules/streamgraph.js"></script>
 <script src="https://orbit.highsoftlabs.com/module/5150599f-09f3-4b54-a398-e60cb01da393/orbit.js"></script>
 <script>
 'use strict';
@@ -207,15 +218,17 @@ Highcharts.chart('chart-sales-traffic', {
 });
 
 Highcharts.chart('chart-devices', {
+  chart: { type: 'area' },
   orbit: {
     id: 'uc02-devices',
-    llmContext: { text: ['Daily sales split by device. Mobile falls from about 26k to 17k USD; desktop is unchanged around 32k USD.'] }
+    llmContext: { text: ['Daily sales split by device, stacked to total sales. Mobile falls from about 26k to 17k USD; desktop is unchanged around 32k USD, so the whole decline is the shrinking mobile band.'] }
   },
-  title: { text: 'Sales by device' },
-  subtitle: { text: 'Try: compare the two series; mobile carries the whole decline' },
+  title: { text: 'Sales by device (stacked)' },
+  subtitle: { text: 'Try: the mobile band carries the whole decline; click a band to focus it' },
   xAxis: { type: 'datetime' },
   yAxis: { title: { text: 'Sales (USD thousands)' }, min: 0 },
   tooltip: { shared: true, valuePrefix: '$', valueSuffix: 'k' },
+  plotOptions: { area: { stacking: 'normal', fillOpacity: 0.55, marker: { enabled: false } } },
   series: [
     Object.assign(ts(mobileSales), { name: 'Mobile' }),
     Object.assign(ts(desktopSales), { name: 'Desktop' })
@@ -223,15 +236,17 @@ Highcharts.chart('chart-devices', {
 });
 
 Highcharts.chart('chart-sources', {
+  chart: { type: 'streamgraph' },
   orbit: {
     id: 'uc02-sources',
-    llmContext: { text: ['Mobile sales split by traffic source. Paid Search falls from about 11k to under 5k USD; Organic, Social and Direct are flat.'] }
+    llmContext: { text: ['Mobile sales by traffic source as a streamgraph. The Paid Search stream thins from about 11k to under 5k USD; Organic, Social and Direct keep their width.'] }
   },
   title: { text: 'Mobile sales by traffic source' },
-  subtitle: { text: 'Try: use Filter to focus on Paid Search' },
+  subtitle: { text: 'Try: the Paid Search stream thins; use Filter to isolate it' },
   xAxis: { type: 'datetime' },
-  yAxis: { title: { text: 'Sales (USD thousands)' }, min: 0 },
+  yAxis: { visible: false },
   tooltip: { shared: true, valuePrefix: '$', valueSuffix: 'k' },
+  plotOptions: { streamgraph: { fillOpacity: 0.75, lineWidth: 0, marker: { enabled: false } } },
   series: [
     Object.assign(ts(srcPaidSearch), { name: 'Paid Search' }),
     Object.assign(ts(srcOrganic), { name: 'Organic' }),

@@ -26,6 +26,7 @@
     --page-bg:var(--n50); --card-bg:var(--n0); --text:var(--n900); --muted:var(--n600);
     --border:var(--n100); --accent:var(--brand-600);
     --shadow:0 1px 2px rgba(0,0,0,.06), 0 3px 3px rgba(0,0,0,.05);
+    --demo-accent:#fe6a35;
   }
   :root[data-theme="dark"] {
     --page-bg:var(--n950); --card-bg:var(--n900); --text:var(--n25); --muted:var(--n300);
@@ -78,12 +79,21 @@
   }
   :root[data-theme="dark"] #orbit-note { color:#fcd34d; border-color:#92400e; }
   .note { font-size:.9375rem; color:var(--muted); }
+  .industry-chip {
+    width:40px; height:40px; border-radius:10px; flex:none;
+    display:flex; align-items:center; justify-content:center;
+    background:color-mix(in srgb, var(--demo-accent) 14%, transparent);
+    color:color-mix(in srgb, var(--demo-accent) 62%, var(--n900));
+  }
+  :root[data-theme="dark"] .industry-chip { color:color-mix(in srgb, var(--demo-accent) 75%, #fff); }
+  .industry-chip svg { width:22px; height:22px; display:block; }
   footer { color:var(--muted); font-size:.8125rem; margin-top:24px; }
 </style>
 </head>
 <body>
 <header>
   <div class="wordmark">Highcharts <span>Orbit</span></div>
+  <div class="industry-chip" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h4l3-8 4 16 3-8h6"/></svg></div>
   <div class="demo-tag">Use case 04 · Scientific / industrial</div>
   <button id="theme-toggle" type="button">Toggle light / dark</button>
 </header>
@@ -142,6 +152,7 @@
   </div>
 
   <div class="panel"><div id="chart-m7" class="chart"></div></div>
+  <div class="panel"><div id="chart-gauge" class="chart" style="height:300px"></div></div>
   <div class="panel"><div id="chart-machines" class="chart"></div></div>
   <div class="panel"><div id="chart-sensors" class="chart"></div></div>
 
@@ -150,6 +161,7 @@
 </main>
 
 <script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
 <script src="https://code.highcharts.com/modules/annotations.js"></script>
 <script src="https://orbit.highsoftlabs.com/module/5150599f-09f3-4b54-a398-e60cb01da393/orbit.js"></script>
@@ -187,6 +199,14 @@ var temperature = [59.2,58.1,57.5,58.5,58.7,59,59.3,57.7,58.6,58.4,57.9,58,58.8,
 var power = [41.5,40.6,41.1,40.8,40.9,41.5,41.9,41,40.9,40.9,40.6,41,40.8,40.7,41.3,41.6,41.2,40.9,41.8,41.9,41,41.2,41.4,41.3,41.1,41.5,41,41.3,41.3,41.2,40.9,41.5,41.9,41.6,41.8,40.8,41.2,40.7,41.2,41.3,41.3,41.5,42.5,42.3,42.9,42.9,43.4,44.4,44.5,44.7,44.8,45.5,45.6,45.9,46.3,46.9,47,47.7,46.9,47.4];
 
 function ts(data) { return { data: data, pointStart: START, pointInterval: DAY }; }
+function fiveNum(a) {
+  var s = a.slice().sort(function (x, y) { return x - y; });
+  function q(p) {
+    var i = (s.length - 1) * p, lo = Math.floor(i), hi = Math.ceil(i);
+    return +(s[lo] + (s[hi] - s[lo]) * (i - lo)).toFixed(3);
+  }
+  return [s[0], q(0.25), q(0.5), q(0.75), s[s.length - 1]];
+}
 
 Highcharts.chart('chart-m7', {
   orbit: {
@@ -207,21 +227,42 @@ Highcharts.chart('chart-m7', {
 });
 
 Highcharts.chart('chart-machines', {
+  chart: { type: 'boxplot' },
   orbit: {
     id: 'uc04-machines',
-    llmContext: { text: ['Vibration for Machines 5 to 8 under similar loads. Only Machine 7 drifts out of its normal range.'] }
+    llmContext: { text: ['Distribution of daily vibration over 60 days for Machines 5 to 8 as boxplots. Machines 5, 6 and 8 sit tightly around 2.1 mm/s; Machine 7 has a far wider spread and a long upper tail past 4 mm/s.'] }
   },
-  title: { text: 'Vibration across machines 5 to 8' },
-  subtitle: { text: 'Try: compare the four series; only Machine 7 deviates' },
-  xAxis: { type: 'datetime' },
+  title: { text: 'Vibration distribution, machines 5 to 8 (60 days)' },
+  subtitle: { text: 'Try: compare the spreads; only Machine 7 has a long upper tail' },
+  xAxis: { categories: ['Machine 5', 'Machine 6', 'Machine 7', 'Machine 8'] },
   yAxis: { title: { text: 'Vibration (mm/s)' } },
-  tooltip: { shared: true, valueSuffix: ' mm/s' },
-  series: [
-    Object.assign(ts(m5), { name: 'Machine 5' }),
-    Object.assign(ts(m6), { name: 'Machine 6' }),
-    Object.assign(ts(m7), { name: 'Machine 7' }),
-    Object.assign(ts(m8), { name: 'Machine 8' })
-  ]
+  legend: { enabled: false },
+  tooltip: { valueSuffix: ' mm/s' },
+  series: [{
+    name: 'Vibration distribution',
+    data: [fiveNum(m5), fiveNum(m6), fiveNum(m7), fiveNum(m8)]
+  }]
+});
+
+Highcharts.chart('chart-gauge', {
+  chart: { type: 'gauge' },
+  orbit: {
+    id: 'uc04-gauge',
+    llmContext: { text: ['Latest daily mean vibration for Machine 7 against its operating bands: green below the 2.55 mm/s upper control limit, amber to 3.5, red above.'] }
+  },
+  title: { text: 'Machine 7: latest vibration reading' },
+  subtitle: { text: 'Try: the needle is above the control limit; open Summary for the stats behind it' },
+  pane: { startAngle: -120, endAngle: 120 },
+  yAxis: {
+    min: 0, max: 5, tickInterval: 1, minorTickInterval: 0.25,
+    title: { text: 'mm/s' },
+    plotBands: [
+      { from: 0, to: 2.55, color: '#00e272' },
+      { from: 2.55, to: 3.5, color: '#f9c80e' },
+      { from: 3.5, to: 5, color: '#fa4b42' }
+    ]
+  },
+  series: [{ name: 'Vibration', data: [m7[m7.length - 1]], tooltip: { valueSuffix: ' mm/s' } }]
 });
 
 Highcharts.chart('chart-sensors', {

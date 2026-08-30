@@ -55,11 +55,20 @@
   .setup { color:var(--muted); font-size:1.125rem; max-width:60rem; margin-bottom:30px; }
   .cards { display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:18px; }
   a.card {
+    transition:transform .15s ease, border-color .15s ease;
     display:block; background:var(--card-bg); border:1px solid var(--border);
     border-radius:16px; box-shadow:var(--shadow); padding:24px;
     color:inherit; text-decoration:none;
   }
-  a.card:hover { border-color:var(--accent); }
+  a.card:hover { border-color:var(--accent); transform:translateY(-2px); }
+  .industry-chip {
+    width:40px; height:40px; border-radius:10px; margin-bottom:12px;
+    display:flex; align-items:center; justify-content:center;
+    background:color-mix(in srgb, var(--demo-accent) 14%, transparent);
+    color:color-mix(in srgb, var(--demo-accent) 62%, var(--n900));
+  }
+  :root[data-theme="dark"] .industry-chip { color:color-mix(in srgb, var(--demo-accent) 75%, #fff); }
+  .industry-chip svg { width:22px; height:22px; display:block; }
   .card .num { color:var(--muted); font-size:.75rem; text-transform:uppercase; letter-spacing:.04em; }
   .card h2 { font-size:1.25rem; font-weight:600; margin:8px 0 8px; }
   .card p { color:var(--muted); font-size:.9375rem; }
@@ -80,42 +89,48 @@
     correlations, contribution, filtering and annotations on ordinary Highcharts charts.</p>
 
   <div class="cards">
-    <a class="card" href="01-internal-dashboards.html">
+    <a class="card" href="01-internal-dashboards.html" style="--demo-accent:#2caffe">
+      <div class="industry-chip" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5V8z"/><path d="M3 8l9 5 9-5"/><path d="M12 13v8"/></svg></div>
       <div class="num">01 · Internal dashboards</div>
       <h2>Why are orders suddenly taking longer to fulfill?</h2>
       <p>An operations dashboard where fulfillment time climbs while order volume stays flat.
         Trace the slowdown to one warehouse, one category and one carrier.</p>
       <div class="tools">Insights · Filter · Correlations · Contribution</div>
     </a>
-    <a class="card" href="02-saas-ecommerce.html">
+    <a class="card" href="02-saas-ecommerce.html" style="--demo-accent:#00e272">
+      <div class="industry-chip" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.6"/><circle cx="17" cy="20" r="1.6"/><path d="M3 4h2l2.6 12h10.8L21 8H6.4"/></svg></div>
       <div class="num">02 · Embedded / SaaS</div>
       <h2>Why did my online sales suddenly drop?</h2>
       <p>A merchant dashboard where sales fall 18% despite normal traffic. Isolate the drop to
         mobile visitors from Paid Search and a cart abandonment spike.</p>
       <div class="tools">Insights · Forecast · Anomaly · Correlations</div>
     </a>
-    <a class="card" href="03-financial-services.html">
+    <a class="card" href="03-financial-services.html" style="--demo-accent:#544fc5">
+      <div class="industry-chip" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 7-8"/><path d="M14 7h6v6"/></svg></div>
       <div class="num">03 · Financial services</div>
       <h2>Why has our portfolio suddenly become more volatile?</h2>
       <p>A risk dashboard where volatility triples while value holds up. Find the sector driving
         the variance and the holdings that started moving in lockstep.</p>
       <div class="tools">Anomaly · Contribution · Correlations · Indicators</div>
     </a>
-    <a class="card" href="04-industrial-machine.html">
+    <a class="card" href="04-industrial-machine.html" style="--demo-accent:#fe6a35">
+      <div class="industry-chip" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h4l3-8 4 16 3-8h6"/></svg></div>
       <div class="num">04 · Scientific / industrial</div>
       <h2>Is this machine starting to fail?</h2>
       <p>Sensor telemetry where one machine drifts past its control limits with vibration spikes,
         rising temperature and rising power draw.</p>
       <div class="tools">Control limits · Anomaly · Forecast · Annotate</div>
     </a>
-    <a class="card" href="05-publishers-media.html">
+    <a class="card" href="05-publishers-media.html" style="--demo-accent:#d568fb">
+      <div class="industry-chip" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h13v14a2 2 0 0 0 2 2H6a2 2 0 0 1-2-2V4z"/><path d="M17 8h3v10a2 2 0 0 1-2 2"/><path d="M8 8h5M8 12h5M8 16h3"/></svg></div>
       <div class="num">05 · Publishers / media</div>
       <h2>Why did this story attract a huge audience but so few subscribers?</h2>
       <p>An editorial dashboard where a viral story is the outlier: 1M pageviews from social,
         almost no subscriptions. Engagement, not reach, predicts conversion.</p>
       <div class="tools">Insights · Contribution · Correlations · Annotate</div>
     </a>
-    <a class="card" href="06-enterprise-software.html">
+    <a class="card" href="06-enterprise-software.html" style="--demo-accent:#2ee0ca">
+      <div class="industry-chip" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="7" rx="1.5"/><rect x="3" y="13" width="18" height="7" rx="1.5"/><path d="M7 7.5h.01M7 16.5h.01"/></svg></div>
       <div class="num">06 · Enterprise software</div>
       <h2>Why has our application suddenly slowed down?</h2>
       <p>An IT operations dashboard where response time doubles after a deployment. Narrow it to
