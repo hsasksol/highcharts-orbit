@@ -6,7 +6,7 @@
 <title>Orbit demo 03: Why has our portfolio suddenly become more volatile?</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Instrument+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap" rel="stylesheet">
 <script>
 (function () {
   var dark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -83,9 +83,12 @@
   :root[data-skin="editorial"] .kpi .value,
   :root[data-skin="editorial"] .journey-tool,
   :root[data-skin="editorial"] .card h2 {
-    font-family:'Instrument Serif', Georgia, serif; font-weight:400; letter-spacing:-.01em;
+    font-family:'Newsreader', Georgia, serif; letter-spacing:-.005em;
   }
-  :root[data-skin="editorial"] h1 { letter-spacing:-.025em; }
+  :root[data-skin="editorial"] h1 { font-weight:500; letter-spacing:-.015em; }
+  :root[data-skin="editorial"] .kpi .value { font-weight:600; }
+  :root[data-skin="editorial"] .journey-tool,
+  :root[data-skin="editorial"] .card h2 { font-weight:600; }
   :root[data-skin="editorial"] .panel,
   :root[data-skin="editorial"] .kpi,
   :root[data-skin="editorial"] a.card,
