@@ -81,6 +81,23 @@
   .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:18px; }
   .grid2 .panel { margin-bottom:0; }
   @media (max-width: 900px) { .grid2 { grid-template-columns:1fr; } }
+  .journey-slider { min-height:170px; }
+  .journey-slide { display:none; }
+  .journey-slide.is-active { display:block; }
+  .journey-step { color:var(--muted); font-size:.75rem; text-transform:uppercase; letter-spacing:.04em; }
+  .journey-tool { color:var(--accent); font-size:1.25rem; font-weight:600; margin:6px 0 8px; }
+  .journey-what { font-size:.9375rem; margin-bottom:8px; max-width:60rem; }
+  .journey-how { font-size:.875rem; color:var(--muted); max-width:60rem; }
+  .journey-how b { color:var(--text); font-weight:600; }
+  .journey-nav { display:flex; align-items:center; gap:12px; margin-top:14px; }
+  .journey-btn {
+    cursor:pointer; font:inherit; font-size:.9375rem; color:var(--text);
+    background:transparent; border:1px solid var(--border); border-radius:8px; padding:6px 12px;
+  }
+  .journey-btn:hover { border-color:var(--accent); }
+  .journey-dots { display:flex; gap:6px; }
+  .journey-dot { width:8px; height:8px; border-radius:50%; border:0; padding:0; cursor:pointer; background:var(--border); }
+  .journey-dot.is-active { background:var(--demo-accent); }
   .industry-chip {
     width:40px; height:40px; border-radius:10px; flex:none;
     display:flex; align-items:center; justify-content:center;
@@ -124,15 +141,43 @@
 
   <div class="panel" data-orbit-context="Investigation journey">
     <h2>The investigation</h2>
-    <ol class="journey">
-      <li><b>Anomaly detection:</b> on the volatility chart, Orbit flags an unusual increase in
-        daily portfolio volatility even though portfolio value is relatively stable.</li>
-      <li><b>Compare with benchmark:</b> the portfolio shows substantially larger recent swings
-        than the broader market.</li>
-      <li><b>Filter / focus:</b> Technology holdings account for a disproportionate share of the swings.</li>
-      <li><b>Correlations:</b> the technology holdings that previously behaved differently now move together.</li>
-      <li><b>Indicators:</b> apply a moving average (SMA) to volatility to see the elevated level persisting.</li>
-    </ol>
+    <div class="journey-slider" id="journey">
+      <div class="journey-slide is-active">
+        <div class="journey-step">Step 1 of 5</div>
+        <h3 class="journey-tool">Anomaly detection</h3>
+        <p class="journey-what">Daily portfolio volatility jumps from about 8% to 19% with spikes at 24.8% and 26.3%, even though portfolio value holds up.</p>
+        <p class="journey-how"><b>How:</b> Open Analyze in the chart toolbar, then Quality, and run Anomaly detection.</p>
+      </div>
+      <div class="journey-slide">
+        <div class="journey-step">Step 2 of 5</div>
+        <h3 class="journey-tool">Compare</h3>
+        <p class="journey-what">The portfolio swings far more than the benchmark in the last 30 days; put the two side by side.</p>
+        <p class="journey-how"><b>How:</b> Click a value in any chart to filter the whole page to it, or open Compare in the top bar to put two segments side by side.</p>
+      </div>
+      <div class="journey-slide">
+        <div class="journey-step">Step 3 of 5</div>
+        <h3 class="journey-tool">Filter and Focus</h3>
+        <p class="journey-what">Technology contributes 62% of the variance from a 28% weight; the treemap makes the imbalance visible.</p>
+        <p class="journey-how"><b>How:</b> Open Transform in the chart toolbar, then Filter and Focus, and narrow to the series you care about.</p>
+      </div>
+      <div class="journey-slide">
+        <div class="journey-step">Step 4 of 5</div>
+        <h3 class="journey-tool">Correlations</h3>
+        <p class="journey-what">The three technology holdings that used to follow different paths now move nearly in lockstep.</p>
+        <p class="journey-how"><b>How:</b> Open Analyze in the chart toolbar, then Relationships, and run Correlations across the series.</p>
+      </div>
+      <div class="journey-slide">
+        <div class="journey-step">Step 5 of 5</div>
+        <h3 class="journey-tool">Indicators</h3>
+        <p class="journey-what">On the candle chart, Bollinger Bands widen sharply in the last month: the visual signature of the new regime.</p>
+        <p class="journey-how"><b>How:</b> Use the Indicators panel on the candle chart to add an SMA or Bollinger Bands.</p>
+      </div>
+      <div class="journey-nav">
+        <button class="journey-btn" type="button" data-dir="-1" aria-label="Previous step">&#8592; Prev</button>
+        <div class="journey-dots"></div>
+        <button class="journey-btn" type="button" data-dir="1" aria-label="Next step">Next &#8594;</button>
+      </div>
+    </div>
   </div>
 
   <div class="kpis">
@@ -321,6 +366,33 @@ if (window.Highcharts && Highcharts.orbitPage) {
 if (!window.Highcharts || !Highcharts.orbit) {
   document.getElementById('orbit-note').hidden = false;
 }
+
+
+/* Journey slider: one Orbit feature per slide */
+(function () {
+  var root = document.getElementById('journey');
+  if (!root) { return; }
+  var slides = Array.prototype.slice.call(root.querySelectorAll('.journey-slide'));
+  var dotsWrap = root.querySelector('.journey-dots');
+  var idx = 0;
+  slides.forEach(function (sl, i) {
+    var d = document.createElement('button');
+    d.className = 'journey-dot';
+    d.type = 'button';
+    d.setAttribute('aria-label', 'Step ' + (i + 1) + ' of ' + slides.length);
+    d.addEventListener('click', function () { go(i); });
+    dotsWrap.appendChild(d);
+  });
+  function go(i) {
+    idx = (i + slides.length) % slides.length;
+    slides.forEach(function (sl, j) { sl.classList.toggle('is-active', j === idx); });
+    Array.prototype.forEach.call(dotsWrap.children, function (d, j) { d.classList.toggle('is-active', j === idx); });
+  }
+  Array.prototype.forEach.call(root.querySelectorAll('.journey-btn'), function (b) {
+    b.addEventListener('click', function () { go(idx + parseInt(b.getAttribute('data-dir'), 10)); });
+  });
+  go(0);
+})();
 
 document.getElementById('theme-toggle').addEventListener('click', function () {
   var el = document.documentElement;

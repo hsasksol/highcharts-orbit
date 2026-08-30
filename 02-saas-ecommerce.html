@@ -81,6 +81,23 @@
   .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:18px; }
   .grid2 .panel { margin-bottom:0; }
   @media (max-width: 900px) { .grid2 { grid-template-columns:1fr; } }
+  .journey-slider { min-height:170px; }
+  .journey-slide { display:none; }
+  .journey-slide.is-active { display:block; }
+  .journey-step { color:var(--muted); font-size:.75rem; text-transform:uppercase; letter-spacing:.04em; }
+  .journey-tool { color:var(--accent); font-size:1.25rem; font-weight:600; margin:6px 0 8px; }
+  .journey-what { font-size:.9375rem; margin-bottom:8px; max-width:60rem; }
+  .journey-how { font-size:.875rem; color:var(--muted); max-width:60rem; }
+  .journey-how b { color:var(--text); font-weight:600; }
+  .journey-nav { display:flex; align-items:center; gap:12px; margin-top:14px; }
+  .journey-btn {
+    cursor:pointer; font:inherit; font-size:.9375rem; color:var(--text);
+    background:transparent; border:1px solid var(--border); border-radius:8px; padding:6px 12px;
+  }
+  .journey-btn:hover { border-color:var(--accent); }
+  .journey-dots { display:flex; gap:6px; }
+  .journey-dot { width:8px; height:8px; border-radius:50%; border:0; padding:0; cursor:pointer; background:var(--border); }
+  .journey-dot.is-active { background:var(--demo-accent); }
   .industry-chip {
     width:40px; height:40px; border-radius:10px; flex:none;
     display:flex; align-items:center; justify-content:center;
@@ -124,15 +141,55 @@
 
   <div class="panel" data-orbit-context="Investigation journey">
     <h2>The investigation</h2>
-    <ol class="journey">
-      <li><b>Insights:</b> on the sales chart, let Orbit highlight the two-week period where
-        sales fall about 18% while traffic stays steady.</li>
-      <li><b>Compare devices:</b> mobile sales decline sharply while desktop stays normal.</li>
-      <li><b>Filter / focus:</b> within mobile, Paid Search accounts for most of the decline.</li>
-      <li><b>Anomaly detection:</b> cart abandonment for Mobile + Paid Search visitors spikes in the same period.</li>
-      <li><b>Correlations:</b> as abandonment rises, conversion rate falls.</li>
-      <li><b>Forecast:</b> project sales forward to estimate the impact if the trend continues.</li>
-    </ol>
+    <div class="journey-slider" id="journey">
+      <div class="journey-slide is-active">
+        <div class="journey-step">Step 1 of 7</div>
+        <h3 class="journey-tool">Insights</h3>
+        <p class="journey-what">Daily sales fall about 18% over the last two weeks while traffic stays steady; the problem is conversion, not demand.</p>
+        <p class="journey-how"><b>How:</b> Open the AI menu in the chart toolbar and choose Insights; Orbit writes up what changed and when.</p>
+      </div>
+      <div class="journey-slide">
+        <div class="journey-step">Step 2 of 7</div>
+        <h3 class="journey-tool">Compare</h3>
+        <p class="journey-what">The mobile band in the stacked chart carries the whole decline; desktop is unchanged.</p>
+        <p class="journey-how"><b>How:</b> Click a value in any chart to filter the whole page to it, or open Compare in the top bar to put two segments side by side.</p>
+      </div>
+      <div class="journey-slide">
+        <div class="journey-step">Step 3 of 7</div>
+        <h3 class="journey-tool">Filter and Focus</h3>
+        <p class="journey-what">Within mobile, the Paid Search stream thins from about 11k to under 5k USD; the other sources keep their width.</p>
+        <p class="journey-how"><b>How:</b> Open Transform in the chart toolbar, then Filter and Focus, and narrow to the series you care about.</p>
+      </div>
+      <div class="journey-slide">
+        <div class="journey-step">Step 4 of 7</div>
+        <h3 class="journey-tool">Anomaly detection</h3>
+        <p class="journey-what">Cart abandonment for Mobile plus Paid Search visitors spikes from 68% to over 80% in the same period.</p>
+        <p class="journey-how"><b>How:</b> Open Analyze in the chart toolbar, then Quality, and run Anomaly detection.</p>
+      </div>
+      <div class="journey-slide">
+        <div class="journey-step">Step 5 of 7</div>
+        <h3 class="journey-tool">Correlations</h3>
+        <p class="journey-what">As abandonment rises, conversion rate falls; the two series mirror each other.</p>
+        <p class="journey-how"><b>How:</b> Open Analyze in the chart toolbar, then Relationships, and run Correlations across the series.</p>
+      </div>
+      <div class="journey-slide">
+        <div class="journey-step">Step 6 of 7</div>
+        <h3 class="journey-tool">Distribution</h3>
+        <p class="journey-what">The histogram of daily sales shows two separated clusters: a regime change, not gradual noise.</p>
+        <p class="journey-how"><b>How:</b> Open View in the chart toolbar and switch to the histogram view, or use the Distribution tool.</p>
+      </div>
+      <div class="journey-slide">
+        <div class="journey-step">Step 7 of 7</div>
+        <h3 class="journey-tool">Forecast</h3>
+        <p class="journey-what">Project sales forward to estimate the impact if the trend continues unaddressed.</p>
+        <p class="journey-how"><b>How:</b> Open Analyze in the chart toolbar, then Trends, and project the series forward.</p>
+      </div>
+      <div class="journey-nav">
+        <button class="journey-btn" type="button" data-dir="-1" aria-label="Previous step">&#8592; Prev</button>
+        <div class="journey-dots"></div>
+        <button class="journey-btn" type="button" data-dir="1" aria-label="Next step">Next &#8594;</button>
+      </div>
+    </div>
   </div>
 
   <div class="kpis">
@@ -327,6 +384,33 @@ if (window.Highcharts && Highcharts.orbitPage) {
 if (!window.Highcharts || !Highcharts.orbit) {
   document.getElementById('orbit-note').hidden = false;
 }
+
+
+/* Journey slider: one Orbit feature per slide */
+(function () {
+  var root = document.getElementById('journey');
+  if (!root) { return; }
+  var slides = Array.prototype.slice.call(root.querySelectorAll('.journey-slide'));
+  var dotsWrap = root.querySelector('.journey-dots');
+  var idx = 0;
+  slides.forEach(function (sl, i) {
+    var d = document.createElement('button');
+    d.className = 'journey-dot';
+    d.type = 'button';
+    d.setAttribute('aria-label', 'Step ' + (i + 1) + ' of ' + slides.length);
+    d.addEventListener('click', function () { go(i); });
+    dotsWrap.appendChild(d);
+  });
+  function go(i) {
+    idx = (i + slides.length) % slides.length;
+    slides.forEach(function (sl, j) { sl.classList.toggle('is-active', j === idx); });
+    Array.prototype.forEach.call(dotsWrap.children, function (d, j) { d.classList.toggle('is-active', j === idx); });
+  }
+  Array.prototype.forEach.call(root.querySelectorAll('.journey-btn'), function (b) {
+    b.addEventListener('click', function () { go(idx + parseInt(b.getAttribute('data-dir'), 10)); });
+  });
+  go(0);
+})();
 
 document.getElementById('theme-toggle').addEventListener('click', function () {
   var el = document.documentElement;

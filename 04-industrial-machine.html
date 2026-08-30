@@ -82,6 +82,23 @@
   .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:18px; }
   .grid2 .panel { margin-bottom:0; }
   @media (max-width: 900px) { .grid2 { grid-template-columns:1fr; } }
+  .journey-slider { min-height:170px; }
+  .journey-slide { display:none; }
+  .journey-slide.is-active { display:block; }
+  .journey-step { color:var(--muted); font-size:.75rem; text-transform:uppercase; letter-spacing:.04em; }
+  .journey-tool { color:var(--accent); font-size:1.25rem; font-weight:600; margin:6px 0 8px; }
+  .journey-what { font-size:.9375rem; margin-bottom:8px; max-width:60rem; }
+  .journey-how { font-size:.875rem; color:var(--muted); max-width:60rem; }
+  .journey-how b { color:var(--text); font-weight:600; }
+  .journey-nav { display:flex; align-items:center; gap:12px; margin-top:14px; }
+  .journey-btn {
+    cursor:pointer; font:inherit; font-size:.9375rem; color:var(--text);
+    background:transparent; border:1px solid var(--border); border-radius:8px; padding:6px 12px;
+  }
+  .journey-btn:hover { border-color:var(--accent); }
+  .journey-dots { display:flex; gap:6px; }
+  .journey-dot { width:8px; height:8px; border-radius:50%; border:0; padding:0; cursor:pointer; background:var(--border); }
+  .journey-dot.is-active { background:var(--demo-accent); }
   .industry-chip {
     width:40px; height:40px; border-radius:10px; flex:none;
     display:flex; align-items:center; justify-content:center;
@@ -125,17 +142,49 @@
 
   <div class="panel" data-orbit-context="Investigation journey">
     <h2>The investigation</h2>
-    <ol class="journey">
-      <li><b>Control limits:</b> apply control limits to Machine 7's vibration; readings approach
-        and then exceed its normal operating range.</li>
-      <li><b>Anomaly detection:</b> Orbit flags an unusual pattern of vibration spikes not present
-        in the other machines.</li>
-      <li><b>Compare machines:</b> Machines 5, 6 and 8 run under similar loads and stay within range.</li>
-      <li><b>Correlations:</b> as vibration increases, temperature and power consumption rise as well.</li>
-      <li><b>Forecast:</b> project the vibration trend forward; readings move further outside the limits.</li>
-      <li><b>Annotate:</b> mark the drift onset and note the similarity to the period before the
-        previous maintenance event.</li>
-    </ol>
+    <div class="journey-slider" id="journey">
+      <div class="journey-slide is-active">
+        <div class="journey-step">Step 1 of 6</div>
+        <h3 class="journey-tool">Control limits</h3>
+        <p class="journey-what">Machine 7’s vibration drifts past its 2.55 mm/s upper control limit; 13 of the last 20 days are above it.</p>
+        <p class="journey-how"><b>How:</b> Open Analyze in the chart toolbar, then Quality, and apply Control limits to see the expected band.</p>
+      </div>
+      <div class="journey-slide">
+        <div class="journey-step">Step 2 of 6</div>
+        <h3 class="journey-tool">Anomaly detection</h3>
+        <p class="journey-what">Orbit flags the spikes at 3.82 and 4.12 mm/s, a pattern the other machines never show.</p>
+        <p class="journey-how"><b>How:</b> Open Analyze in the chart toolbar, then Quality, and run Anomaly detection.</p>
+      </div>
+      <div class="journey-slide">
+        <div class="journey-step">Step 3 of 6</div>
+        <h3 class="journey-tool">Compare</h3>
+        <p class="journey-what">The boxplots tell it at a glance: Machines 5, 6 and 8 sit tight around 2.1 mm/s; Machine 7 has a long upper tail.</p>
+        <p class="journey-how"><b>How:</b> Click a value in any chart to filter the whole page to it, or open Compare in the top bar to put two segments side by side.</p>
+      </div>
+      <div class="journey-slide">
+        <div class="journey-step">Step 4 of 6</div>
+        <h3 class="journey-tool">Correlations</h3>
+        <p class="journey-what">Vibration, bearing temperature and power draw all rise together; the scatter points straight at the bearing.</p>
+        <p class="journey-how"><b>How:</b> Open Analyze in the chart toolbar, then Relationships, and run Correlations across the series.</p>
+      </div>
+      <div class="journey-slide">
+        <div class="journey-step">Step 5 of 6</div>
+        <h3 class="journey-tool">Forecast</h3>
+        <p class="journey-what">Project the vibration trend forward; readings move further outside the limits.</p>
+        <p class="journey-how"><b>How:</b> Open Analyze in the chart toolbar, then Trends, and project the series forward.</p>
+      </div>
+      <div class="journey-slide">
+        <div class="journey-step">Step 6 of 6</div>
+        <h3 class="journey-tool">Annotate</h3>
+        <p class="journey-what">Mark the drift onset and note the similarity to the weeks before the previous bearing replacement.</p>
+        <p class="journey-how"><b>How:</b> Open Annotate in the chart toolbar, then Draw, and mark the point directly on the chart.</p>
+      </div>
+      <div class="journey-nav">
+        <button class="journey-btn" type="button" data-dir="-1" aria-label="Previous step">&#8592; Prev</button>
+        <div class="journey-dots"></div>
+        <button class="journey-btn" type="button" data-dir="1" aria-label="Next step">Next &#8594;</button>
+      </div>
+    </div>
   </div>
 
   <div class="kpis">
@@ -335,6 +384,33 @@ if (window.Highcharts && Highcharts.orbitPage) {
 if (!window.Highcharts || !Highcharts.orbit) {
   document.getElementById('orbit-note').hidden = false;
 }
+
+
+/* Journey slider: one Orbit feature per slide */
+(function () {
+  var root = document.getElementById('journey');
+  if (!root) { return; }
+  var slides = Array.prototype.slice.call(root.querySelectorAll('.journey-slide'));
+  var dotsWrap = root.querySelector('.journey-dots');
+  var idx = 0;
+  slides.forEach(function (sl, i) {
+    var d = document.createElement('button');
+    d.className = 'journey-dot';
+    d.type = 'button';
+    d.setAttribute('aria-label', 'Step ' + (i + 1) + ' of ' + slides.length);
+    d.addEventListener('click', function () { go(i); });
+    dotsWrap.appendChild(d);
+  });
+  function go(i) {
+    idx = (i + slides.length) % slides.length;
+    slides.forEach(function (sl, j) { sl.classList.toggle('is-active', j === idx); });
+    Array.prototype.forEach.call(dotsWrap.children, function (d, j) { d.classList.toggle('is-active', j === idx); });
+  }
+  Array.prototype.forEach.call(root.querySelectorAll('.journey-btn'), function (b) {
+    b.addEventListener('click', function () { go(idx + parseInt(b.getAttribute('data-dir'), 10)); });
+  });
+  go(0);
+})();
 
 document.getElementById('theme-toggle').addEventListener('click', function () {
   var el = document.documentElement;
