@@ -88,7 +88,13 @@
   }
   .journey-slider { min-height:170px; }
   .journey-slide { display:none; }
-  .journey-slide.is-active { display:block; }
+  .journey-slide.is-active { display:grid; grid-template-columns:minmax(0,1fr) 380px; gap:20px; align-items:start; }
+  .journey-media {
+    border:1px solid var(--border); border-radius:10px; overflow:hidden;
+    background:#fff; margin:0;
+  }
+  .journey-media img { display:block; width:100%; height:auto; }
+  @media (max-width: 980px) { .journey-slide.is-active { grid-template-columns:1fr; } }
   .journey-step { color:var(--muted); font-size:.75rem; text-transform:uppercase; letter-spacing:.04em; }
   .journey-tool { color:var(--accent); font-size:1.25rem; font-weight:600; margin:6px 0 8px; }
   .journey-what { font-size:.9375rem; margin-bottom:8px; max-width:60rem; }
@@ -148,40 +154,58 @@
     <h2>How to use Orbit</h2>
     <div class="journey-slider" id="journey">
       <div class="journey-slide is-active">
-        <div class="journey-step">Step 1 of 6</div>
-        <h3 class="journey-tool">Control limits</h3>
-        <p class="journey-what">Machine 7’s vibration drifts past its 2.55 mm/s upper control limit; 13 of the last 20 days are above it.</p>
-        <p class="journey-how"><b>How:</b> Open Analyze in the chart toolbar, then Quality, and apply Control limits to see the expected band.</p>
+        <div class="journey-copy">
+          <div class="journey-step">Step 1 of 6</div>
+          <h3 class="journey-tool">Control limits</h3>
+          <p class="journey-what">Machine 7’s vibration drifts past its 2.55 mm/s upper control limit; 13 of the last 20 days are above it.</p>
+          <p class="journey-how"><b>How:</b> Open Analyze in the chart toolbar, then Quality, and apply Control limits to see the expected band.</p>
+        </div>
+        <figure class="journey-media"><img src="shots/menu-analyze-quality.jpg" alt="Analyze menu, Quality, Control Limits" loading="lazy"></figure>
       </div>
       <div class="journey-slide">
-        <div class="journey-step">Step 2 of 6</div>
-        <h3 class="journey-tool">Anomaly detection</h3>
-        <p class="journey-what">Orbit flags the spikes at 3.82 and 4.12 mm/s, a pattern the other machines never show.</p>
-        <p class="journey-how"><b>How:</b> Open Analyze in the chart toolbar, then Quality, and run Anomaly detection.</p>
+        <div class="journey-copy">
+          <div class="journey-step">Step 2 of 6</div>
+          <h3 class="journey-tool">Anomaly detection</h3>
+          <p class="journey-what">Orbit flags the spikes at 3.82 and 4.12 mm/s, a pattern the other machines never show.</p>
+          <p class="journey-how"><b>How:</b> Open Analyze in the chart toolbar, then Quality, and run Anomaly detection.</p>
+        </div>
+        <figure class="journey-media"><img src="shots/menu-analyze-quality.jpg" alt="Analyze menu, Quality, Anomaly Detection" loading="lazy"></figure>
       </div>
       <div class="journey-slide">
-        <div class="journey-step">Step 3 of 6</div>
-        <h3 class="journey-tool">Compare</h3>
-        <p class="journey-what">The boxplots tell it at a glance: Machines 5, 6 and 8 sit tight around 2.1 mm/s; Machine 7 has a long upper tail.</p>
-        <p class="journey-how"><b>How:</b> Click a value in any chart to filter the whole page to it, or open Compare in the top bar to put two segments side by side.</p>
+        <div class="journey-copy">
+          <div class="journey-step">Step 3 of 6</div>
+          <h3 class="journey-tool">Compare</h3>
+          <p class="journey-what">The boxplots tell it at a glance: Machines 5, 6 and 8 sit tight around 2.1 mm/s; Machine 7 has a long upper tail.</p>
+          <p class="journey-how"><b>How:</b> Click a value in any chart to filter the whole page to it, or open Compare in the top bar to put two segments side by side.</p>
+        </div>
+        <figure class="journey-media"><img src="shots/topbar.jpg" alt="The Orbit page top bar with Filters and Compare" loading="lazy"></figure>
       </div>
       <div class="journey-slide">
-        <div class="journey-step">Step 4 of 6</div>
-        <h3 class="journey-tool">Correlations</h3>
-        <p class="journey-what">Vibration, bearing temperature and power draw all rise together; the scatter points straight at the bearing.</p>
-        <p class="journey-how"><b>How:</b> Open Analyze in the chart toolbar, then Relationships, and run Correlations across the series.</p>
+        <div class="journey-copy">
+          <div class="journey-step">Step 4 of 6</div>
+          <h3 class="journey-tool">Correlations</h3>
+          <p class="journey-what">Vibration, bearing temperature and power draw all rise together; the scatter points straight at the bearing.</p>
+          <p class="journey-how"><b>How:</b> Open Analyze in the chart toolbar, then Relationships, and run Correlations across the series.</p>
+        </div>
+        <figure class="journey-media"><img src="shots/menu-analyze-relationships.jpg" alt="Analyze menu, Relationships, Correlations" loading="lazy"></figure>
       </div>
       <div class="journey-slide">
-        <div class="journey-step">Step 5 of 6</div>
-        <h3 class="journey-tool">Forecast</h3>
-        <p class="journey-what">Project the vibration trend forward; readings move further outside the limits.</p>
-        <p class="journey-how"><b>How:</b> Open Analyze in the chart toolbar, then Trends, and project the series forward.</p>
+        <div class="journey-copy">
+          <div class="journey-step">Step 5 of 6</div>
+          <h3 class="journey-tool">Forecast</h3>
+          <p class="journey-what">Project the vibration trend forward; readings move further outside the limits.</p>
+          <p class="journey-how"><b>How:</b> Open Analyze in the chart toolbar, then Trends, and project the series forward.</p>
+        </div>
+        <figure class="journey-media"><img src="shots/menu-analyze-trends.jpg" alt="Analyze menu, Trends, Forecast" loading="lazy"></figure>
       </div>
       <div class="journey-slide">
-        <div class="journey-step">Step 6 of 6</div>
-        <h3 class="journey-tool">Annotate</h3>
-        <p class="journey-what">Mark the drift onset and note the similarity to the weeks before the previous bearing replacement.</p>
-        <p class="journey-how"><b>How:</b> Open Annotate in the chart toolbar, then Draw, and mark the point directly on the chart.</p>
+        <div class="journey-copy">
+          <div class="journey-step">Step 6 of 6</div>
+          <h3 class="journey-tool">Annotate</h3>
+          <p class="journey-what">Mark the drift onset and note the similarity to the weeks before the previous bearing replacement.</p>
+          <p class="journey-how"><b>How:</b> Open Annotate in the chart toolbar, then Draw, and mark the point directly on the chart.</p>
+        </div>
+        <figure class="journey-media"><img src="shots/menu-annotate.jpg" alt="The Annotate menu with Draw" loading="lazy"></figure>
       </div>
       <div class="journey-nav">
         <button class="journey-btn" type="button" data-dir="-1" aria-label="Previous step">&#8592; Prev</button>

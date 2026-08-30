@@ -87,7 +87,13 @@
   }
   .journey-slider { min-height:170px; }
   .journey-slide { display:none; }
-  .journey-slide.is-active { display:block; }
+  .journey-slide.is-active { display:grid; grid-template-columns:minmax(0,1fr) 380px; gap:20px; align-items:start; }
+  .journey-media {
+    border:1px solid var(--border); border-radius:10px; overflow:hidden;
+    background:#fff; margin:0;
+  }
+  .journey-media img { display:block; width:100%; height:auto; }
+  @media (max-width: 980px) { .journey-slide.is-active { grid-template-columns:1fr; } }
   .journey-step { color:var(--muted); font-size:.75rem; text-transform:uppercase; letter-spacing:.04em; }
   .journey-tool { color:var(--accent); font-size:1.25rem; font-weight:600; margin:6px 0 8px; }
   .journey-what { font-size:.9375rem; margin-bottom:8px; max-width:60rem; }
@@ -148,40 +154,58 @@
     <h2>How to use Orbit</h2>
     <div class="journey-slider" id="journey">
       <div class="journey-slide is-active">
-        <div class="journey-step">Step 1 of 6</div>
-        <h3 class="journey-tool">Insights</h3>
-        <p class="journey-what">On the response-time chart, Orbit highlights the sharp increase while overall application usage stays normal.</p>
-        <p class="journey-how"><b>How:</b> Open the AI menu in the chart toolbar and choose Insights; Orbit writes up what changed and when.</p>
+        <div class="journey-copy">
+          <div class="journey-step">Step 1 of 6</div>
+          <h3 class="journey-tool">Insights</h3>
+          <p class="journey-what">On the response-time chart, Orbit highlights the sharp increase while overall application usage stays normal.</p>
+          <p class="journey-how"><b>How:</b> Open the AI menu in the chart toolbar and choose Insights; Orbit writes up what changed and when.</p>
+        </div>
+        <figure class="journey-media"><img src="shots/menu-ai.jpg" alt="The AI menu in the chart toolbar, with Insights" loading="lazy"></figure>
       </div>
       <div class="journey-slide">
-        <div class="journey-step">Step 2 of 6</div>
-        <h3 class="journey-tool">Filter and Focus</h3>
-        <p class="journey-what">Most regions remain normal; the Northeast row in the heatmap heats up day by day.</p>
-        <p class="journey-how"><b>How:</b> Open Transform in the chart toolbar, then Filter and Focus, and narrow to the series you care about.</p>
+        <div class="journey-copy">
+          <div class="journey-step">Step 2 of 6</div>
+          <h3 class="journey-tool">Filter and Focus</h3>
+          <p class="journey-what">Most regions remain normal; the Northeast row in the heatmap heats up day by day.</p>
+          <p class="journey-how"><b>How:</b> Open Transform in the chart toolbar, then Filter and Focus, and narrow to the series you care about.</p>
+        </div>
+        <figure class="journey-media"><img src="shots/menu-transform.jpg" alt="The Transform menu with Filter & Focus" loading="lazy"></figure>
       </div>
       <div class="journey-slide">
-        <div class="journey-step">Step 3 of 6</div>
-        <h3 class="journey-tool">Compare</h3>
-        <p class="journey-what">One server cluster serving the Northeast is much slower than the others; baseline vs last 7 days makes it obvious.</p>
-        <p class="journey-how"><b>How:</b> Click a value in any chart to filter the whole page to it, or open Compare in the top bar to put two segments side by side.</p>
+        <div class="journey-copy">
+          <div class="journey-step">Step 3 of 6</div>
+          <h3 class="journey-tool">Compare</h3>
+          <p class="journey-what">One server cluster serving the Northeast is much slower than the others; baseline vs last 7 days makes it obvious.</p>
+          <p class="journey-how"><b>How:</b> Click a value in any chart to filter the whole page to it, or open Compare in the top bar to put two segments side by side.</p>
+        </div>
+        <figure class="journey-media"><img src="shots/topbar.jpg" alt="The Orbit page top bar with Filters and Compare" loading="lazy"></figure>
       </div>
       <div class="journey-slide">
-        <div class="journey-step">Step 4 of 6</div>
-        <h3 class="journey-tool">Correlations</h3>
-        <p class="journey-what">Response time, error rate and memory usage on cluster NE-2 all rise together.</p>
-        <p class="journey-how"><b>How:</b> Open Analyze in the chart toolbar, then Relationships, and run Correlations across the series.</p>
+        <div class="journey-copy">
+          <div class="journey-step">Step 4 of 6</div>
+          <h3 class="journey-tool">Correlations</h3>
+          <p class="journey-what">Response time, error rate and memory usage on cluster NE-2 all rise together.</p>
+          <p class="journey-how"><b>How:</b> Open Analyze in the chart toolbar, then Relationships, and run Correlations across the series.</p>
+        </div>
+        <figure class="journey-media"><img src="shots/menu-analyze-relationships.jpg" alt="Analyze menu, Relationships, Correlations" loading="lazy"></figure>
       </div>
       <div class="journey-slide">
-        <div class="journey-step">Step 5 of 6</div>
-        <h3 class="journey-tool">Annotate</h3>
-        <p class="journey-what">Mark the 2.14.0 deployment on the charts; the deterioration begins shortly after.</p>
-        <p class="journey-how"><b>How:</b> Open Annotate in the chart toolbar, then Draw, and mark the point directly on the chart.</p>
+        <div class="journey-copy">
+          <div class="journey-step">Step 5 of 6</div>
+          <h3 class="journey-tool">Annotate</h3>
+          <p class="journey-what">Mark the 2.14.0 deployment on the charts; the deterioration begins shortly after.</p>
+          <p class="journey-how"><b>How:</b> Open Annotate in the chart toolbar, then Draw, and mark the point directly on the chart.</p>
+        </div>
+        <figure class="journey-media"><img src="shots/menu-annotate.jpg" alt="The Annotate menu with Draw" loading="lazy"></figure>
       </div>
       <div class="journey-slide">
-        <div class="journey-step">Step 6 of 6</div>
-        <h3 class="journey-tool">Control limits</h3>
-        <p class="journey-what">Response time and memory usage have moved outside their expected ranges.</p>
-        <p class="journey-how"><b>How:</b> Open Analyze in the chart toolbar, then Quality, and apply Control limits to see the expected band.</p>
+        <div class="journey-copy">
+          <div class="journey-step">Step 6 of 6</div>
+          <h3 class="journey-tool">Control limits</h3>
+          <p class="journey-what">Response time and memory usage have moved outside their expected ranges.</p>
+          <p class="journey-how"><b>How:</b> Open Analyze in the chart toolbar, then Quality, and apply Control limits to see the expected band.</p>
+        </div>
+        <figure class="journey-media"><img src="shots/menu-analyze-quality.jpg" alt="Analyze menu, Quality, Control Limits" loading="lazy"></figure>
       </div>
       <div class="journey-nav">
         <button class="journey-btn" type="button" data-dir="-1" aria-label="Previous step">&#8592; Prev</button>

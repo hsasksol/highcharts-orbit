@@ -87,7 +87,13 @@
   }
   .journey-slider { min-height:170px; }
   .journey-slide { display:none; }
-  .journey-slide.is-active { display:block; }
+  .journey-slide.is-active { display:grid; grid-template-columns:minmax(0,1fr) 380px; gap:20px; align-items:start; }
+  .journey-media {
+    border:1px solid var(--border); border-radius:10px; overflow:hidden;
+    background:#fff; margin:0;
+  }
+  .journey-media img { display:block; width:100%; height:auto; }
+  @media (max-width: 980px) { .journey-slide.is-active { grid-template-columns:1fr; } }
   .journey-step { color:var(--muted); font-size:.75rem; text-transform:uppercase; letter-spacing:.04em; }
   .journey-tool { color:var(--accent); font-size:1.25rem; font-weight:600; margin:6px 0 8px; }
   .journey-what { font-size:.9375rem; margin-bottom:8px; max-width:60rem; }
@@ -148,40 +154,58 @@
     <h2>How to use Orbit</h2>
     <div class="journey-slider" id="journey">
       <div class="journey-slide is-active">
-        <div class="journey-step">Step 1 of 6</div>
-        <h3 class="journey-tool">Insights</h3>
-        <p class="journey-what">The Ferry story stands out: about 3x the normal traffic but well below average subscription conversion.</p>
-        <p class="journey-how"><b>How:</b> Open the AI menu in the chart toolbar and choose Insights; Orbit writes up what changed and when.</p>
+        <div class="journey-copy">
+          <div class="journey-step">Step 1 of 6</div>
+          <h3 class="journey-tool">Insights</h3>
+          <p class="journey-what">The Ferry story stands out: about 3x the normal traffic but well below average subscription conversion.</p>
+          <p class="journey-how"><b>How:</b> Open the AI menu in the chart toolbar and choose Insights; Orbit writes up what changed and when.</p>
+        </div>
+        <figure class="journey-media"><img src="shots/menu-ai.jpg" alt="The AI menu in the chart toolbar, with Insights" loading="lazy"></figure>
       </div>
       <div class="journey-slide">
-        <div class="journey-step">Step 2 of 6</div>
-        <h3 class="journey-tool">Compare</h3>
-        <p class="journey-what">Its readership is far larger, but reading time and completion are much lower than other high-traffic stories.</p>
-        <p class="journey-how"><b>How:</b> Click a value in any chart to filter the whole page to it, or open Compare in the top bar to put two segments side by side.</p>
+        <div class="journey-copy">
+          <div class="journey-step">Step 2 of 6</div>
+          <h3 class="journey-tool">Compare</h3>
+          <p class="journey-what">Its readership is far larger, but reading time and completion are much lower than other high-traffic stories.</p>
+          <p class="journey-how"><b>How:</b> Click a value in any chart to filter the whole page to it, or open Compare in the top bar to put two segments side by side.</p>
+        </div>
+        <figure class="journey-media"><img src="shots/topbar.jpg" alt="The Orbit page top bar with Filters and Compare" loading="lazy"></figure>
       </div>
       <div class="journey-slide">
-        <div class="journey-step">Step 3 of 6</div>
-        <h3 class="journey-tool">Filter and Focus</h3>
-        <p class="journey-what">Most of the extra traffic came from social media: 612k of 1,044k pageviews.</p>
-        <p class="journey-how"><b>How:</b> Open Transform in the chart toolbar, then Filter and Focus, and narrow to the series you care about.</p>
+        <div class="journey-copy">
+          <div class="journey-step">Step 3 of 6</div>
+          <h3 class="journey-tool">Filter and Focus</h3>
+          <p class="journey-what">Most of the extra traffic came from social media: 612k of 1,044k pageviews.</p>
+          <p class="journey-how"><b>How:</b> Open Transform in the chart toolbar, then Filter and Focus, and narrow to the series you care about.</p>
+        </div>
+        <figure class="journey-media"><img src="shots/menu-transform.jpg" alt="The Transform menu with Filter & Focus" loading="lazy"></figure>
       </div>
       <div class="journey-slide">
-        <div class="journey-step">Step 4 of 6</div>
-        <h3 class="journey-tool">Correlations</h3>
-        <p class="journey-what">Reading time and completion predict subscriptions; raw pageviews do not. The bubble chart shows why.</p>
-        <p class="journey-how"><b>How:</b> Open Analyze in the chart toolbar, then Relationships, and run Correlations across the series.</p>
+        <div class="journey-copy">
+          <div class="journey-step">Step 4 of 6</div>
+          <h3 class="journey-tool">Correlations</h3>
+          <p class="journey-what">Reading time and completion predict subscriptions; raw pageviews do not. The bubble chart shows why.</p>
+          <p class="journey-how"><b>How:</b> Open Analyze in the chart toolbar, then Relationships, and run Correlations across the series.</p>
+        </div>
+        <figure class="journey-media"><img src="shots/menu-analyze-relationships.jpg" alt="Analyze menu, Relationships, Correlations" loading="lazy"></figure>
       </div>
       <div class="journey-slide">
-        <div class="journey-step">Step 5 of 6</div>
-        <h3 class="journey-tool">Contribution</h3>
-        <p class="journey-what">Newsletter converts at 1.9% and Direct at 0.84%, while Social converts at 0.05%; the small audiences are the valuable ones.</p>
-        <p class="journey-how"><b>How:</b> Open the Contribution tool from the chart toolbar to rank how much each part makes up of the whole.</p>
+        <div class="journey-copy">
+          <div class="journey-step">Step 5 of 6</div>
+          <h3 class="journey-tool">Contribution</h3>
+          <p class="journey-what">Newsletter converts at 1.9% and Direct at 0.84%, while Social converts at 0.05%; the small audiences are the valuable ones.</p>
+          <p class="journey-how"><b>How:</b> Open the Contribution tool from the chart toolbar to rank how much each part makes up of the whole.</p>
+        </div>
+        <figure class="journey-media"><img src="shots/menu-view.jpg" alt="The View menu with data views" loading="lazy"></figure>
       </div>
       <div class="journey-slide">
-        <div class="journey-step">Step 6 of 6</div>
-        <h3 class="journey-tool">Annotate</h3>
-        <p class="journey-what">Mark the viral spike on the timeline and capture the finding for the rest of the team.</p>
-        <p class="journey-how"><b>How:</b> Open Annotate in the chart toolbar, then Draw, and mark the point directly on the chart.</p>
+        <div class="journey-copy">
+          <div class="journey-step">Step 6 of 6</div>
+          <h3 class="journey-tool">Annotate</h3>
+          <p class="journey-what">Mark the viral spike on the timeline and capture the finding for the rest of the team.</p>
+          <p class="journey-how"><b>How:</b> Open Annotate in the chart toolbar, then Draw, and mark the point directly on the chart.</p>
+        </div>
+        <figure class="journey-media"><img src="shots/menu-annotate.jpg" alt="The Annotate menu with Draw" loading="lazy"></figure>
       </div>
       <div class="journey-nav">
         <button class="journey-btn" type="button" data-dir="-1" aria-label="Previous step">&#8592; Prev</button>
