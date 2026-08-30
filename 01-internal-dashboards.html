@@ -86,6 +86,19 @@
   }
   :root[data-theme="dark"] .industry-chip { color:color-mix(in srgb, var(--demo-accent) 75%, #fff); }
   .industry-chip svg { width:22px; height:22px; display:block; }
+  /* Unsupported workaround: Orbit does not theme its own UI (it stays light
+     regardless of page theme; verified, no documented option). In dark mode
+     we invert Orbit's UI containers with a CSS filter. Charts are unaffected;
+     only Orbit chrome is inverted. This can break on any Orbit update;
+     remove when Orbit ships native dark mode. */
+  :root[data-theme="dark"] .orbit-toolbar,
+  :root[data-theme="dark"] .orbit-toolpanel,
+  :root[data-theme="dark"] .orbit-page-topstack,
+  :root[data-theme="dark"] .orbit-drawer,
+  :root[data-theme="dark"] .orbit-cmdk,
+  :root[data-theme="dark"] body > [class^="orbit-"] {
+    filter: invert(1) hue-rotate(180deg);
+  }
   footer { color:var(--muted); font-size:.8125rem; margin-top:24px; }
 </style>
 </head>
