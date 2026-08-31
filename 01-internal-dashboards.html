@@ -149,10 +149,13 @@
   .grid2 .panel { margin-bottom:0; }
   @media (max-width: 900px) { .grid2 { grid-template-columns:1fr; } }
   .panel--guide {
-    background:color-mix(in srgb, var(--accent) 6%, var(--card-bg));
-    border-color:color-mix(in srgb, var(--accent) 30%, var(--border));
+    background:color-mix(in srgb, var(--accent) 11%, var(--card-bg));
+    border-color:color-mix(in srgb, var(--accent) 42%, var(--border));
   }
-  .journey-slider { min-height:170px; }
+  :root[data-theme="dark"] .panel--guide {
+    background:color-mix(in srgb, var(--accent) 17%, var(--card-bg));
+  }
+  .journey-slider { position:relative; min-height:170px; padding:0 46px; }
   .journey-slide { display:none; }
   .journey-slide.is-active { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:24px; align-items:center; }
   .journey-slide--nomedia.is-active { grid-template-columns:1fr; }
@@ -160,20 +163,28 @@
     border:1px solid var(--border); border-radius:10px; overflow:hidden;
     background:#fff; margin:0; box-shadow:var(--shadow);
   }
-  .journey-media { display:flex; align-items:center; justify-content:center; }
-  .journey-media img { display:block; width:100%; height:auto; max-height:340px; object-fit:contain; }
+  .journey-media {
+    display:flex; align-items:center; justify-content:flex-end;
+    aspect-ratio:2 / 1; justify-self:end; width:100%;
+  }
+  .journey-media img { display:block; width:100%; height:100%; object-fit:contain; object-position:right center; }
   @media (max-width: 980px) { .journey-slide.is-active { grid-template-columns:1fr; } }
   .journey-step { color:var(--muted); font-size:.75rem; text-transform:uppercase; letter-spacing:.04em; }
   .journey-tool { color:var(--accent); font-size:1.25rem; font-weight:600; margin:6px 0 8px; }
   .journey-what { font-size:.9375rem; margin-bottom:8px; max-width:60rem; }
   .journey-how { font-size:.875rem; color:var(--muted); max-width:60rem; }
   .journey-how b { color:var(--text); font-weight:600; }
-  .journey-nav { display:flex; align-items:center; gap:12px; margin-top:14px; }
+  .journey-nav { display:flex; align-items:center; justify-content:center; margin-top:14px; }
   .journey-btn {
-    cursor:pointer; font:inherit; font-size:.9375rem; color:var(--text);
-    background:transparent; border:1px solid var(--border); border-radius:8px; padding:6px 12px;
+    position:absolute; top:0; bottom:0; width:36px; padding:0;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    color:var(--muted); background:color-mix(in srgb, var(--accent) 7%, transparent);
+    border:1px solid color-mix(in srgb, var(--accent) 22%, var(--border)); border-radius:8px;
   }
-  .journey-btn:hover { border-color:var(--accent); }
+  .journey-btn--prev { left:0; }
+  .journey-btn--next { right:0; }
+  .journey-btn:hover { color:var(--accent); border-color:var(--accent); background:color-mix(in srgb, var(--accent) 14%, transparent); }
+  .journey-btn svg { width:18px; height:18px; display:block; }
   .journey-dots { display:flex; gap:6px; }
   .journey-dot { width:8px; height:8px; border-radius:50%; border:0; padding:0; cursor:pointer; background:var(--border); }
   .journey-dot.is-active { background:var(--demo-accent); }
@@ -278,11 +289,9 @@
         </div>
         <figure class="journey-media"><img src="shots/menu-view.jpg" alt="The View menu with data views"></figure>
       </div>
-      <div class="journey-nav">
-        <button class="journey-btn" type="button" data-dir="-1" aria-label="Previous step">&#8592; Prev</button>
-        <div class="journey-dots"></div>
-        <button class="journey-btn" type="button" data-dir="1" aria-label="Next step">Next &#8594;</button>
-      </div>
+      <button class="journey-btn journey-btn--prev" type="button" data-dir="-1" aria-label="Previous step"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <button class="journey-btn journey-btn--next" type="button" data-dir="1" aria-label="Next step"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
+      <div class="journey-nav"><div class="journey-dots"></div></div>
     </div>
   </div>
 
