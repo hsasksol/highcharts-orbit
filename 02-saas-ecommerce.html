@@ -152,6 +152,9 @@
   :root[data-skin="console"] #theme-toggle,
   :root[data-skin="console"] .journey-btn { border-radius:4px; }
   :root[data-skin="console"] .guide-toggle { border-radius:4px; }
+  /* The amber accent is saturated, so the guide tint needs a lighter hand. */
+  :root[data-skin="console"] .panel--guide { background:color-mix(in srgb, var(--accent) 8%, var(--card-bg)); }
+  :root[data-skin="console"][data-theme="dark"] .panel--guide { background:color-mix(in srgb, var(--accent) 9%, var(--card-bg)); }
 
   /* Skin: aurora. High key jade and cool light, generous radii, soft depth. */
   :root[data-skin="aurora"] {
