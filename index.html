@@ -21,6 +21,8 @@
 <style>
   /* Design tokens read from www.highcharts.com (verified 2026-08-29) */
   * { box-sizing: border-box; margin: 0; }
+  :root { color-scheme: light; }
+  :root[data-theme="dark"] { color-scheme: dark; }
   :root {
     --n0:#fff; --n25:#f7f7f8; --n50:#f2f1f4; --n100:#e3e3e8; --n200:#c8c7d1;
     --n300:#acabba; --n600:#5e5c70; --n700:#474554; --n800:#2f2e38; --n900:#18171c; --n950:#0a090d;
@@ -49,9 +51,12 @@
   .controls { margin-left:auto; display:flex; align-items:center; gap:10px; }
   .skin-select {
     cursor:pointer; font:inherit; font-size:.875rem; color:var(--text);
-    background:transparent; border:1px solid var(--n200); border-radius:8px;
+    background:var(--card-bg); border:1px solid var(--n200); border-radius:8px;
     padding:7px 10px;
   }
+  /* Native select popups and other form controls follow color-scheme, not our
+     tokens, so state it explicitly per theme. */
+  .skin-select option { background:var(--card-bg); color:var(--text); }
   #theme-toggle {
     cursor:pointer; color:var(--text); background:transparent;
     border:1px solid var(--n200); border-radius:8px; padding:7px;
