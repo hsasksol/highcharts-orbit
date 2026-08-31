@@ -51,23 +51,38 @@
   .wordmark span { color:var(--accent); }
   .demo-tag { color:var(--muted); font-size:.875rem; }
   .controls { margin-left:auto; display:flex; align-items:center; gap:10px; }
-  .skin-select {
+  /* Own dropdown, not a native select: a native popup list is drawn by the
+     browser and does not reliably follow our tokens in dark mode. */
+  .skin-picker { position:relative; }
+  .skin-btn {
     cursor:pointer; font:inherit; font-size:.875rem; color:var(--text);
     background:var(--card-bg); border:1px solid var(--n200); border-radius:8px;
-    padding:7px 10px;
+    padding:7px 10px; display:flex; align-items:center; gap:6px;
   }
-  /* Native select popups and other form controls follow color-scheme, not our
-     tokens, so state it explicitly per theme. */
-  .skin-select option { background:var(--card-bg); color:var(--text); }
+  .skin-btn svg { width:14px; height:14px; display:block; }
+  .skin-menu {
+    position:absolute; right:0; top:calc(100% + 6px); z-index:20;
+    margin:0; padding:4px; list-style:none; min-width:100%; white-space:nowrap;
+    background:var(--card-bg); border:1px solid var(--border); border-radius:8px;
+    box-shadow:var(--shadow);
+  }
+  .skin-menu li {
+    padding:7px 10px; border-radius:6px; cursor:pointer;
+    font-size:.875rem; color:var(--text);
+  }
+  .skin-menu li:hover, .skin-menu li:focus {
+    background:color-mix(in srgb, var(--accent) 12%, transparent); outline:none;
+  }
+  .skin-menu li[aria-selected="true"] { color:var(--accent); font-weight:600; }
   #theme-toggle {
     cursor:pointer; color:var(--text); background:transparent;
     border:1px solid var(--n200); border-radius:8px; padding:7px;
     display:flex; align-items:center; justify-content:center;
   }
   #theme-toggle svg { width:18px; height:18px; display:block; }
-  :root[data-theme="dark"] .skin-select,
+  :root[data-theme="dark"] .skin-btn,
   :root[data-theme="dark"] #theme-toggle { border-color:var(--n700); }
-  .skin-select:hover, #theme-toggle:hover { border-color:var(--accent); }
+  .skin-btn:hover, #theme-toggle:hover { border-color:var(--accent); }
   a.wordmark { text-decoration:none; color:inherit; }
   a.wordmark:hover span { text-decoration:underline; }
 
@@ -98,7 +113,8 @@
   :root[data-skin="editorial"] .kpi,
   :root[data-skin="editorial"] a.card,
   :root[data-skin="editorial"] .journey-media { border-radius:6px; }
-  :root[data-skin="editorial"] .skin-select,
+  :root[data-skin="editorial"] .skin-btn,
+  :root[data-skin="editorial"] .skin-menu,
   :root[data-skin="editorial"] #theme-toggle,
   :root[data-skin="editorial"] .journey-btn { border-radius:4px; }
   :root[data-skin="editorial"] .kpi .label,
@@ -191,10 +207,16 @@
   <div class="industry-chip" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h13v14a2 2 0 0 0 2 2H6a2 2 0 0 1-2-2V4z"/><path d="M17 8h3v10a2 2 0 0 1-2 2"/><path d="M8 8h5M8 12h5M8 16h3"/></svg></div>
   <div class="demo-tag">Use case 05 · Publishers / media</div>
   <div class="controls">
-    <select id="skin-select" class="skin-select" aria-label="Design theme">
-      <option value="highcharts">Highcharts theme</option>
-      <option value="editorial">Editorial theme</option>
-    </select>
+    <div class="skin-picker">
+      <button id="skin-btn" class="skin-btn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Design theme">
+        <span id="skin-label">Highcharts theme</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <ul id="skin-menu" class="skin-menu" role="listbox" hidden>
+        <li role="option" tabindex="0" data-skin-value="highcharts">Highcharts theme</li>
+        <li role="option" tabindex="0" data-skin-value="editorial">Editorial theme</li>
+      </ul>
+    </div>
     <button id="theme-toggle" type="button" aria-label="Switch colour theme"></button>
   </div>
 </header>
@@ -539,7 +561,10 @@ if (!window.Highcharts || !Highcharts.orbit) {
   var SUN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
   var MOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
   var toggle = document.getElementById('theme-toggle');
-  var select = document.getElementById('skin-select');
+  var skinBtn = document.getElementById('skin-btn');
+  var skinMenu = document.getElementById('skin-menu');
+  var skinLabel = document.getElementById('skin-label');
+  var skinItems = Array.prototype.slice.call(skinMenu.querySelectorAll('[data-skin-value]'));
 
   function paintToggle() {
     var dark = document.documentElement.getAttribute('data-theme') === 'dark';
@@ -560,8 +585,38 @@ if (!window.Highcharts || !Highcharts.orbit) {
     }
   }
 
-  select.value = activeSkin;
-  select.addEventListener('change', function () { applySkin(select.value, true); });
+  function closeSkinMenu() { skinMenu.hidden = true; skinBtn.setAttribute('aria-expanded', 'false'); }
+  function markSkin(name) {
+    skinItems.forEach(function (it) {
+      var on = it.getAttribute('data-skin-value') === name;
+      it.setAttribute('aria-selected', on ? 'true' : 'false');
+      if (on) { skinLabel.textContent = it.textContent; }
+    });
+  }
+
+  skinBtn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    if (skinMenu.hidden) {
+      skinMenu.hidden = false;
+      skinBtn.setAttribute('aria-expanded', 'true');
+    } else {
+      closeSkinMenu();
+    }
+  });
+  skinItems.forEach(function (it) {
+    it.addEventListener('click', function () {
+      var v = it.getAttribute('data-skin-value');
+      applySkin(v, true);
+      markSkin(v);
+      closeSkinMenu();
+    });
+    it.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); it.click(); }
+    });
+  });
+  document.addEventListener('click', closeSkinMenu);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeSkinMenu(); } });
+  markSkin(activeSkin);
 
   toggle.addEventListener('click', function () {
     var el = document.documentElement;
