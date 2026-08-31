@@ -156,17 +156,34 @@
   :root[data-theme="dark"] .panel--guide {
     background:color-mix(in srgb, var(--accent) 17%, var(--card-bg));
   }
-  .guide-head { display:flex; align-items:center; gap:10px; cursor:pointer; }
-  .guide-head h2 { margin:0; }
-  .guide-toggle {
-    margin-left:auto; cursor:pointer; padding:5px; display:flex; align-items:center;
-    color:var(--muted); background:transparent; border:1px solid transparent; border-radius:6px;
+  .guide-head {
+    display:flex; align-items:center; gap:12px; cursor:pointer;
+    margin:-8px -10px 0; padding:8px 10px; border-radius:12px;
+    transition:background .15s ease;
   }
-  .guide-head:hover .guide-toggle { color:var(--accent); border-color:color-mix(in srgb, var(--accent) 30%, transparent); }
-  .guide-toggle svg { width:18px; height:18px; display:block; transition:transform .15s ease; }
+  .guide-head:hover { background:color-mix(in srgb, var(--accent) 10%, transparent); }
+  .guide-head h2 { margin:0; font-size:1.375rem; letter-spacing:-.01em; }
+  .guide-badge {
+    width:34px; height:34px; border-radius:10px; flex:none;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--accent); background:color-mix(in srgb, var(--accent) 16%, transparent);
+  }
+  .guide-badge svg { width:19px; height:19px; display:block; }
+  .guide-count { font-size:.8125rem; color:var(--muted); }
+  .guide-toggle {
+    margin-left:auto; flex:none; cursor:pointer; font:inherit; font-size:.8125rem; font-weight:600;
+    display:flex; align-items:center; gap:6px; padding:7px 13px; border-radius:999px;
+    color:var(--accent); background:color-mix(in srgb, var(--accent) 12%, transparent);
+    border:1px solid color-mix(in srgb, var(--accent) 34%, transparent);
+    transition:background .15s ease, border-color .15s ease;
+  }
+  .guide-head:hover .guide-toggle { background:color-mix(in srgb, var(--accent) 20%, transparent); border-color:var(--accent); }
+  .guide-toggle:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  .guide-toggle svg { width:15px; height:15px; display:block; transition:transform .15s ease; }
   .panel--guide.is-collapsed .guide-toggle svg { transform:rotate(-90deg); }
+  .panel--guide.is-collapsed { padding-top:18px; padding-bottom:18px; }
   .panel--guide.is-collapsed .journey-slider { display:none; }
-  .journey-slider { position:relative; height:300px; padding:10px 46px 0; }
+  .journey-slider { position:relative; height:250px; padding:14px 46px 0; }
   .journey-slide { display:none; }
   .journey-slide.is-active { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:24px; align-items:start; }
   .journey-slide--nomedia.is-active { grid-template-columns:1fr; }
@@ -186,9 +203,9 @@
   .journey-what { font-size:.9375rem; margin-bottom:8px; }
   .journey-how { font-size:.875rem; color:var(--muted); }
   .journey-how b { color:var(--text); font-weight:600; }
-  .journey-nav { display:flex; align-items:center; justify-content:center; margin-top:14px; }
+  .journey-nav { display:flex; align-items:center; justify-content:center; margin-top:10px; }
   .journey-btn {
-    position:absolute; top:10px; bottom:44px; width:36px; padding:0;
+    position:absolute; top:14px; bottom:40px; width:36px; padding:0;
     display:flex; align-items:center; justify-content:center; cursor:pointer;
     color:var(--muted); background:color-mix(in srgb, var(--accent) 7%, transparent);
     border:1px solid color-mix(in srgb, var(--accent) 22%, var(--border)); border-radius:8px;
@@ -240,10 +257,12 @@
     on the Orbit installation's referrer allowlist; opened from a local file the charts
     degrade silently to plain Highcharts.</div>
 
-  <div class="panel panel--guide" data-orbit-context="How to use Orbit in this demo">
+  <div class="panel panel--guide is-collapsed" data-orbit-context="How to use Orbit in this demo">
     <div class="guide-head" id="guide-head">
+      <span class="guide-badge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4.5h6a3 3 0 0 1 3 3V20a2.5 2.5 0 0 0-2.5-2.5H2z"/><path d="M22 4.5h-6a3 3 0 0 0-3 3V20a2.5 2.5 0 0 1 2.5-2.5H22z"/></svg></span>
       <h2>How to use Orbit</h2>
-      <button id="guide-toggle" class="guide-toggle" type="button" aria-expanded="true" aria-controls="journey" aria-label="Hide the guide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+      <span class="guide-count" id="guide-count"></span>
+      <button id="guide-toggle" class="guide-toggle" type="button" aria-expanded="false" aria-controls="journey" aria-label="Show the guide"><span id="guide-toggle-text">Show</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
     </div>
     <div class="journey-slider" id="journey">
       <div class="journey-slide is-active">
@@ -557,17 +576,22 @@ if (!window.Highcharts || !Highcharts.orbit) {
   var panel = document.querySelector('.panel--guide');
   var head = document.getElementById('guide-head');
   var btn = document.getElementById('guide-toggle');
+  var txt = document.getElementById('guide-toggle-text');
+  var count = document.getElementById('guide-count');
   if (!panel || !head || !btn) { return; }
+  if (count) { count.textContent = panel.querySelectorAll('.journey-slide').length + ' steps'; }
   function set(collapsed) {
     panel.classList.toggle('is-collapsed', collapsed);
     btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
     btn.setAttribute('aria-label', collapsed ? 'Show the guide' : 'Hide the guide');
+    if (txt) { txt.textContent = collapsed ? 'Show' : 'Hide'; }
     try { localStorage.setItem('orbit-demo-guide', collapsed ? 'closed' : 'open'); } catch (e) {}
   }
   head.addEventListener('click', function () { set(!panel.classList.contains('is-collapsed')); });
-  var stored = 'open';
-  try { stored = localStorage.getItem('orbit-demo-guide') || 'open'; } catch (e) {}
-  set(stored === 'closed');
+  /* Closed by default; only a stored 'open' opens it. */
+  var stored = 'closed';
+  try { stored = localStorage.getItem('orbit-demo-guide') || 'closed'; } catch (e) {}
+  set(stored !== 'open');
 })();
 
 /* Skin (design theme) and light/dark controls */
