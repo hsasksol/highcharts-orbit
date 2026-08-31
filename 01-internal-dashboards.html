@@ -155,17 +155,27 @@
   :root[data-theme="dark"] .panel--guide {
     background:color-mix(in srgb, var(--accent) 17%, var(--card-bg));
   }
-  .journey-slider { position:relative; min-height:170px; padding:0 46px; }
+  .guide-head { display:flex; align-items:center; gap:10px; cursor:pointer; }
+  .guide-head h2 { margin:0; }
+  .guide-toggle {
+    margin-left:auto; cursor:pointer; padding:5px; display:flex; align-items:center;
+    color:var(--muted); background:transparent; border:1px solid transparent; border-radius:6px;
+  }
+  .guide-head:hover .guide-toggle { color:var(--accent); border-color:color-mix(in srgb, var(--accent) 30%, transparent); }
+  .guide-toggle svg { width:18px; height:18px; display:block; transition:transform .15s ease; }
+  .panel--guide.is-collapsed .guide-toggle svg { transform:rotate(-90deg); }
+  .panel--guide.is-collapsed .journey-slider { display:none; }
+  .journey-slider { position:relative; height:300px; padding:10px 46px 0; }
   .journey-slide { display:none; }
-  .journey-slide.is-active { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:24px; align-items:center; }
+  .journey-slide.is-active { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:24px; align-items:start; }
   .journey-slide--nomedia.is-active { grid-template-columns:1fr; }
   .journey-media {
     border:1px solid var(--border); border-radius:10px; overflow:hidden;
     background:#fff; margin:0; box-shadow:var(--shadow);
   }
   .journey-media {
-    display:flex; align-items:center; justify-content:flex-end;
-    aspect-ratio:2 / 1; justify-self:end; width:100%;
+    display:flex; align-items:flex-start; justify-content:flex-end;
+    aspect-ratio:3 / 1; justify-self:end; width:100%;
   }
   .journey-media img { display:block; width:100%; height:100%; object-fit:contain; object-position:right center; }
   @media (max-width: 980px) { .journey-slide.is-active { grid-template-columns:1fr; } }
@@ -176,7 +186,7 @@
   .journey-how b { color:var(--text); font-weight:600; }
   .journey-nav { display:flex; align-items:center; justify-content:center; margin-top:14px; }
   .journey-btn {
-    position:absolute; top:0; bottom:0; width:36px; padding:0;
+    position:absolute; top:10px; bottom:44px; width:36px; padding:0;
     display:flex; align-items:center; justify-content:center; cursor:pointer;
     color:var(--muted); background:color-mix(in srgb, var(--accent) 7%, transparent);
     border:1px solid color-mix(in srgb, var(--accent) 22%, var(--border)); border-radius:8px;
@@ -196,19 +206,6 @@
   }
   :root[data-theme="dark"] .industry-chip { color:color-mix(in srgb, var(--demo-accent) 75%, #fff); }
   .industry-chip svg { width:22px; height:22px; display:block; }
-  /* Unsupported workaround: Orbit does not theme its own UI (it stays light
-     regardless of page theme; verified, no documented option). In dark mode
-     we invert Orbit's UI containers with a CSS filter. Charts are unaffected;
-     only Orbit chrome is inverted. This can break on any Orbit update;
-     remove when Orbit ships native dark mode. */
-  :root[data-theme="dark"] .orbit-toolbar,
-  :root[data-theme="dark"] .orbit-toolpanel,
-  :root[data-theme="dark"] .orbit-page-topstack,
-  :root[data-theme="dark"] .orbit-drawer,
-  :root[data-theme="dark"] .orbit-cmdk,
-  :root[data-theme="dark"] body > [class^="orbit-"] {
-    filter: invert(1) hue-rotate(180deg);
-  }
   footer { color:var(--muted); font-size:.8125rem; margin-top:24px; }
 </style>
 </head>
@@ -242,7 +239,10 @@
     degrade silently to plain Highcharts.</div>
 
   <div class="panel panel--guide" data-orbit-context="How to use Orbit in this demo">
-    <h2>How to use Orbit</h2>
+    <div class="guide-head" id="guide-head">
+      <h2>How to use Orbit</h2>
+      <button id="guide-toggle" class="guide-toggle" type="button" aria-expanded="true" aria-controls="journey" aria-label="Hide the guide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+    </div>
     <div class="journey-slider" id="journey">
       <div class="journey-slide is-active">
         <div class="journey-copy">
@@ -251,7 +251,7 @@
           <p class="journey-what">On the fulfillment chart, average time climbs from about 1.8 to 2.6 days while order volume stays flat. Let Orbit highlight and explain the change.</p>
           <p class="journey-how"><b>How:</b> Open the AI menu in the chart toolbar and choose Insights; Orbit writes up what changed and when.</p>
         </div>
-        <figure class="journey-media"><img src="shots/menu-ai.jpg" alt="The AI menu in the chart toolbar, with Insights"></figure>
+        <figure class="journey-media"><img src="shots/menu-ai.png" alt="The AI menu in the chart toolbar, with Insights"></figure>
       </div>
       <div class="journey-slide">
         <div class="journey-copy">
@@ -260,7 +260,7 @@
           <p class="journey-what">The East Coast warehouse accounts for most of the increase; Midwest and West stay near their 1.8-day baseline.</p>
           <p class="journey-how"><b>How:</b> Click a value in any chart to filter the whole page to it, or open Compare in the top bar to put two segments side by side.</p>
         </div>
-        <figure class="journey-media"><img src="shots/topbar.jpg" alt="The Orbit page top bar with Filters and Compare"></figure>
+        <figure class="journey-media"><img src="shots/topbar.png" alt="The Orbit page top bar with Filters and Compare"></figure>
       </div>
       <div class="journey-slide">
         <div class="journey-copy">
@@ -269,7 +269,7 @@
           <p class="journey-what">Within East Coast, Furniture is the category taking far longer; Electronics and Apparel are flat.</p>
           <p class="journey-how"><b>How:</b> Open Transform in the chart toolbar, then Filter and Focus, and narrow to the series you care about.</p>
         </div>
-        <figure class="journey-media"><img src="shots/menu-transform.jpg" alt="The Transform menu with Filter & Focus"></figure>
+        <figure class="journey-media"><img src="shots/menu-transform.png" alt="The Transform menu with Filter & Focus"></figure>
       </div>
       <div class="journey-slide">
         <div class="journey-copy">
@@ -278,7 +278,7 @@
           <p class="journey-what">Late shipments and customer complaints rise together in the same weeks; one drives the other.</p>
           <p class="journey-how"><b>How:</b> Open Analyze in the chart toolbar, then Relationships, and run Correlations across the series.</p>
         </div>
-        <figure class="journey-media"><img src="shots/menu-analyze-relationships.jpg" alt="Analyze menu, Relationships, Correlations"></figure>
+        <figure class="journey-media"><img src="shots/menu-analyze-relationships.png" alt="Analyze menu, Relationships, Correlations"></figure>
       </div>
       <div class="journey-slide">
         <div class="journey-copy">
@@ -287,7 +287,7 @@
           <p class="journey-what">One carrier holds about 60% of the late shipments; the donut shows each carrier’s share of the problem.</p>
           <p class="journey-how"><b>How:</b> Open the Contribution tool from the chart toolbar to rank how much each part makes up of the whole.</p>
         </div>
-        <figure class="journey-media"><img src="shots/menu-view.jpg" alt="The View menu with data views"></figure>
+        <figure class="journey-media"><img src="shots/menu-view.png" alt="The View menu with data views"></figure>
       </div>
       <button class="journey-btn journey-btn--prev" type="button" data-dir="-1" aria-label="Previous step"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
       <button class="journey-btn journey-btn--next" type="button" data-dir="1" aria-label="Next step"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
@@ -565,6 +565,24 @@ if (!window.Highcharts || !Highcharts.orbit) {
     b.addEventListener('click', function () { go(idx + parseInt(b.getAttribute('data-dir'), 10)); });
   });
   go(0);
+})();
+
+/* Guide box show and hide */
+(function () {
+  var panel = document.querySelector('.panel--guide');
+  var head = document.getElementById('guide-head');
+  var btn = document.getElementById('guide-toggle');
+  if (!panel || !head || !btn) { return; }
+  function set(collapsed) {
+    panel.classList.toggle('is-collapsed', collapsed);
+    btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+    btn.setAttribute('aria-label', collapsed ? 'Show the guide' : 'Hide the guide');
+    try { localStorage.setItem('orbit-demo-guide', collapsed ? 'closed' : 'open'); } catch (e) {}
+  }
+  head.addEventListener('click', function () { set(!panel.classList.contains('is-collapsed')); });
+  var stored = 'open';
+  try { stored = localStorage.getItem('orbit-demo-guide') || 'open'; } catch (e) {}
+  set(stored === 'closed');
 })();
 
 /* Skin (design theme) and light/dark controls */
