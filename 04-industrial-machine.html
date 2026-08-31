@@ -6,7 +6,7 @@
 <title>Orbit demo 04: Is this machine starting to fail?</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Instrument+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script>
 (function () {
   var dark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -119,6 +119,68 @@
   :root[data-skin="editorial"] .journey-btn { border-radius:4px; }
   :root[data-skin="editorial"] .kpi .label,
   :root[data-skin="editorial"] .journey-step { letter-spacing:.08em; }
+
+  /* Skin: console. Graphite and amber, flat surfaces, mono numerals. */
+  :root[data-skin="console"] {
+    --page-bg:#f4f4f2; --card-bg:#ffffff; --text:#18181b; --muted:#57534e;
+    --border:#dedcd8; --accent:#9a5b06;
+    --shadow:none;
+  }
+  :root[data-skin="console"][data-theme="dark"] {
+    --page-bg:#0c0c0d; --card-bg:#161618; --text:#ececee; --muted:#8b8b93;
+    --border:#282829; --accent:#f0b429;
+    --shadow:none;
+  }
+  :root[data-skin="console"] body { font-family:'Space Grotesk', system-ui, sans-serif; }
+  :root[data-skin="console"] h1 { font-weight:600; letter-spacing:-.02em; }
+  :root[data-skin="console"] .kpi .value,
+  :root[data-skin="console"] .kpi .label,
+  :root[data-skin="console"] .journey-step,
+  :root[data-skin="console"] .guide-count { font-family:'IBM Plex Mono', ui-monospace, monospace; }
+  :root[data-skin="console"] .kpi .value { font-weight:500; letter-spacing:-.03em; }
+  :root[data-skin="console"] .journey-tool { font-weight:600; letter-spacing:-.01em; }
+  :root[data-skin="console"] .panel,
+  :root[data-skin="console"] .kpi,
+  :root[data-skin="console"] a.card,
+  :root[data-skin="console"] .journey-media { border-radius:4px; }
+  :root[data-skin="console"] .industry-chip,
+  :root[data-skin="console"] .guide-badge,
+  :root[data-skin="console"] .guide-head { border-radius:4px; }
+  :root[data-skin="console"] .skin-btn,
+  :root[data-skin="console"] .skin-menu,
+  :root[data-skin="console"] .skin-menu li,
+  :root[data-skin="console"] #theme-toggle,
+  :root[data-skin="console"] .journey-btn { border-radius:4px; }
+  :root[data-skin="console"] .guide-toggle { border-radius:4px; }
+
+  /* Skin: aurora. High key jade and cool light, generous radii, soft depth. */
+  :root[data-skin="aurora"] {
+    --page-bg:#eef3f2; --card-bg:#ffffff; --text:#16231f; --muted:#607068;
+    --border:#dde7e3; --accent:#0f7d68;
+    --shadow:0 2px 6px rgba(20,50,44,.06), 0 12px 28px rgba(20,50,44,.05);
+  }
+  :root[data-skin="aurora"][data-theme="dark"] {
+    --page-bg:#0a1512; --card-bg:#11201c; --text:#e6f2ee; --muted:#93a9a1;
+    --border:#1e332d; --accent:#5fd6b4;
+    --shadow:0 2px 6px rgba(0,0,0,.45), 0 12px 28px rgba(0,0,0,.35);
+  }
+  :root[data-skin="aurora"] body { font-family:'Manrope', system-ui, sans-serif; }
+  :root[data-skin="aurora"] h1 { font-weight:800; letter-spacing:-.028em; }
+  :root[data-skin="aurora"] .kpi .value { font-weight:700; letter-spacing:-.02em; }
+  :root[data-skin="aurora"] .journey-tool,
+  :root[data-skin="aurora"] .guide-head h2 { font-weight:700; letter-spacing:-.015em; }
+  :root[data-skin="aurora"] .panel,
+  :root[data-skin="aurora"] .kpi,
+  :root[data-skin="aurora"] a.card,
+  :root[data-skin="aurora"] .journey-media { border-radius:22px; }
+  :root[data-skin="aurora"] .industry-chip,
+  :root[data-skin="aurora"] .guide-badge { border-radius:14px; }
+  :root[data-skin="aurora"] .guide-head { border-radius:18px; }
+  :root[data-skin="aurora"] .skin-btn,
+  :root[data-skin="aurora"] .skin-menu,
+  :root[data-skin="aurora"] #theme-toggle,
+  :root[data-skin="aurora"] .journey-btn { border-radius:14px; }
+  :root[data-skin="aurora"] .skin-menu li { border-radius:10px; }
   main { max-width:1300px; margin:0 auto; padding:32px 20px 64px; }
   h1 { font-size:2.625rem; font-weight:700; line-height:1.15; margin-bottom:12px; }
   .setup { color:var(--muted); font-size:1.125rem; max-width:60rem; margin-bottom:24px; }
@@ -242,6 +304,8 @@
       <ul id="skin-menu" class="skin-menu" role="listbox" hidden>
         <li role="option" tabindex="0" data-skin-value="highcharts">Highcharts theme</li>
         <li role="option" tabindex="0" data-skin-value="editorial">Editorial theme</li>
+        <li role="option" tabindex="0" data-skin-value="console">Console theme</li>
+        <li role="option" tabindex="0" data-skin-value="aurora">Aurora theme</li>
       </ul>
     </div>
     <button id="theme-toggle" type="button" aria-label="Switch colour theme"></button>
@@ -396,6 +460,24 @@ var SKINS = {
       light: { backgroundColor: '#fffdf8', neutralColor: '#1c1a17', highlightColor: '#10473f' },
       dark:  { backgroundColor: '#1e1c17', neutralColor: '#f2efe6', highlightColor: '#7fc0a9' },
       colors: ['#2e6f5e', '#c96f3f', '#4a6fa5', '#b8894a', '#7a5c8e', '#4f8f8a', '#a8544e', '#6b8f3d', '#8a7f6d']
+    }
+  },
+  console: {
+    font: "'Space Grotesk', system-ui, sans-serif",
+    palette: {
+      colorScheme: 'light dark',
+      light: { backgroundColor: '#ffffff', neutralColor: '#18181b', highlightColor: '#9a5b06' },
+      dark:  { backgroundColor: '#161618', neutralColor: '#ececee', highlightColor: '#f0b429' },
+      colors: ['#c47a05', '#3d84c6', '#d2603f', '#57935f', '#8368cf', '#c2559a', '#2f9c92', '#8a8236', '#6e7887']
+    }
+  },
+  aurora: {
+    font: "'Manrope', system-ui, sans-serif",
+    palette: {
+      colorScheme: 'light dark',
+      light: { backgroundColor: '#ffffff', neutralColor: '#16231f', highlightColor: '#0f7d68' },
+      dark:  { backgroundColor: '#11201c', neutralColor: '#e6f2ee', highlightColor: '#5fd6b4' },
+      colors: ['#149574', '#6b6fe0', '#dd6a55', '#3796cd', '#a865cf', '#c07f14', '#2c8598', '#6f9e46', '#7c8aa5']
     }
   }
 };
