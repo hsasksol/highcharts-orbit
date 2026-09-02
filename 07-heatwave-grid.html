@@ -740,7 +740,7 @@ function buildPage(d) {
     title: { text: 'Texas: the shape of a hot day, demand by hour and date' },
     subtitle: { text: 'Try: filter the page to Last 7d in the top bar; the ridge follows' },
     xAxis: { categories: days, labels: { step: Math.ceil(days.length / 12) }, title: { text: 'Date' } },
-    yAxis: { categories: Array.apply(null, Array(24)).map(function (_, i) { return (i < 10 ? '0' : '') + i + ':00'; }), title: { text: 'Hour, Texas time' }, reversed: true, min: 0, max: 23 },
+    yAxis: { categories: Array.apply(null, Array(24)).map(function (_, i) { return (i < 10 ? '0' : '') + i + ':00'; }), title: { text: 'Hour, Texas time' }, reversed: true, min: 0, endOnTick: false, startOnTick: false, tickInterval: 2 },
     colorAxis: { minColor: '#fef3c7', maxColor: '#b91c1c' },
     legend: { align: 'right', layout: 'vertical', verticalAlign: 'middle', symbolHeight: 260 },
     tooltip: { formatter: function () { return (function (p) { return p.series.xAxis.categories[p.x] + ' ' + p.series.yAxis.categories[p.y] + ': <b>' + p.value.toFixed(1); })(this.point || this) + ' GW</b>'; } },
