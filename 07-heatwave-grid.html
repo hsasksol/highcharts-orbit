@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orbit demo 07: What does a heat wave do to the power grid?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+(function () {
+  var dark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  var el = document.documentElement;
+  el.setAttribute('data-theme', dark ? 'dark' : 'light');
+  el.classList.add(dark ? 'highcharts-dark' : 'highcharts-light');
+  var skin = 'highcharts';
+  try { skin = localStorage.getItem('orbit-demo-skin') || 'highcharts'; } catch (e) {}
+  el.setAttribute('data-skin', skin);
+})();
+</script>
+<style>
+  /* Design tokens read from www.highcharts.com (verified 2026-08-29) */
+  * { box-sizing: border-box; margin: 0; }
+  :root { color-scheme: light; }
+  :root[data-theme="dark"] { color-scheme: dark; }
+  :root {
+    --n0:#fff; --n25:#f7f7f8; --n50:#f2f1f4; --n100:#e3e3e8; --n200:#c8c7d1;
+    --n300:#acabba; --n400:#918fa3; --n500:#75738c; --n600:#5e5c70; --n700:#474554;
+    --n800:#2f2e38; --n850:#23222a; --n900:#18171c; --n950:#0a090d;
+    --brand-400:#a5acff; --brand-500:#8791ff; --brand-600:#626bd0; --brand-700:#4a55c9;
+    --page-bg:var(--n50); --card-bg:var(--n0); --text:var(--n900); --muted:var(--n600);
+    --border:var(--n100); --accent:var(--brand-600);
+    --shadow:0 1px 2px rgba(0,0,0,.06), 0 3px 3px rgba(0,0,0,.05);
+    --demo-accent:#fa4b42;
+  }
+  :root[data-theme="dark"] {
+    --page-bg:var(--n950); --card-bg:var(--n900); --text:var(--n25); --muted:var(--n300);
+    --border:var(--n800); --accent:var(--brand-400);
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 3px 3px rgba(0,0,0,.3);
+  }
+  body {
+    background:var(--page-bg); color:var(--text);
+    font-family:'IBM Plex Sans', sans-serif; line-height:1.3;
+  }
+  header {
+    background:var(--card-bg); border-bottom:1px solid var(--border);
+    display:flex; align-items:center; gap:16px; padding:14px 20px;
+    position:sticky; top:0; z-index:10;
+  }
+  .wordmark { font-weight:700; font-size:1.125rem; }
+  .wordmark span { color:var(--accent); }
+  .demo-tag { color:var(--muted); font-size:.875rem; }
+  .controls { margin-left:auto; display:flex; align-items:center; gap:10px; }
+  /* Own dropdown, not a native select: a native popup list is drawn by the
+     browser and does not reliably follow our tokens in dark mode. */
+  .skin-picker { position:relative; }
+  .skin-btn {
+    cursor:pointer; font:inherit; font-size:.875rem; color:var(--text);
+    background:var(--card-bg); border:1px solid var(--n200); border-radius:8px;
+    padding:7px 10px; display:flex; align-items:center; gap:6px;
+  }
+  .skin-btn svg { width:14px; height:14px; display:block; }
+  .skin-menu {
+    position:absolute; right:0; top:calc(100% + 6px); z-index:20;
+    margin:0; padding:4px; list-style:none; min-width:100%; white-space:nowrap;
+    background:var(--card-bg); border:1px solid var(--border); border-radius:8px;
+    box-shadow:var(--shadow);
+  }
+  .skin-menu li {
+    padding:7px 10px; border-radius:6px; cursor:pointer;
+    font-size:.875rem; color:var(--text);
+  }
+  .skin-menu li:hover, .skin-menu li:focus {
+    background:color-mix(in srgb, var(--accent) 12%, transparent); outline:none;
+  }
+  .skin-menu li[aria-selected="true"] { color:var(--accent); font-weight:600; }
+  #theme-toggle {
+    cursor:pointer; color:var(--text); background:transparent;
+    border:1px solid var(--n200); border-radius:8px; padding:7px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  #theme-toggle svg { width:18px; height:18px; display:block; }
+  :root[data-theme="dark"] .skin-btn,
+  :root[data-theme="dark"] #theme-toggle { border-color:var(--n700); }
+  .skin-btn:hover, #theme-toggle:hover { border-color:var(--accent); }
+  a.wordmark { text-decoration:none; color:inherit; }
+  a.wordmark:hover span { text-decoration:underline; }
+
+  /* Editorial skin: warm paper, serif display, quiet borders. Original palette,
+     inspired by editorial data-report layouts, not copied from any site. */
+  :root[data-skin="editorial"] {
+    --page-bg:#f4f1ea; --card-bg:#fffdf8; --text:#1c1a17; --muted:#6b6459;
+    --border:#e2dbcd; --accent:#10473f;
+    --shadow:0 1px 2px rgba(28,26,23,.05);
+  }
+  :root[data-skin="editorial"][data-theme="dark"] {
+    --page-bg:#14130f; --card-bg:#1e1c17; --text:#f2efe6; --muted:#a49b8b;
+    --border:#33302a; --accent:#7fc0a9;
+    --shadow:0 1px 2px rgba(0,0,0,.5);
+  }
+  :root[data-skin="editorial"] body { font-family:'Instrument Sans', system-ui, sans-serif; }
+  :root[data-skin="editorial"] h1,
+  :root[data-skin="editorial"] .kpi .value,
+  :root[data-skin="editorial"] .journey-tool,
+  :root[data-skin="editorial"] .card h2 {
+    font-family:'Newsreader', Georgia, serif; letter-spacing:-.005em;
+  }
+  :root[data-skin="editorial"] h1 { font-weight:500; letter-spacing:-.015em; }
+  :root[data-skin="editorial"] .kpi .value { font-weight:600; }
+  :root[data-skin="editorial"] .journey-tool,
+  :root[data-skin="editorial"] .card h2 { font-weight:600; }
+  :root[data-skin="editorial"] .panel,
+  :root[data-skin="editorial"] .kpi,
+  :root[data-skin="editorial"] a.card,
+  :root[data-skin="editorial"] .journey-media { border-radius:6px; }
+  :root[data-skin="editorial"] .skin-btn,
+  :root[data-skin="editorial"] .skin-menu,
+  :root[data-skin="editorial"] #theme-toggle,
+  :root[data-skin="editorial"] .journey-btn { border-radius:4px; }
+  :root[data-skin="editorial"] .kpi .label,
+  :root[data-skin="editorial"] .journey-step { letter-spacing:.08em; }
+
+  /* Skin: console. Graphite and amber, flat surfaces, mono numerals. */
+  :root[data-skin="console"] {
+    --page-bg:#f4f4f2; --card-bg:#ffffff; --text:#18181b; --muted:#57534e;
+    --border:#dedcd8; --accent:#9a5b06;
+    --shadow:none;
+  }
+  :root[data-skin="console"][data-theme="dark"] {
+    --page-bg:#0c0c0d; --card-bg:#161618; --text:#ececee; --muted:#8b8b93;
+    --border:#282829; --accent:#f0b429;
+    --shadow:none;
+  }
+  :root[data-skin="console"] body { font-family:'Space Grotesk', system-ui, sans-serif; }
+  :root[data-skin="console"] h1 { font-weight:600; letter-spacing:-.02em; }
+  :root[data-skin="console"] .kpi .value,
+  :root[data-skin="console"] .kpi .label,
+  :root[data-skin="console"] .journey-step,
+  :root[data-skin="console"] .guide-count { font-family:'IBM Plex Mono', ui-monospace, monospace; }
+  :root[data-skin="console"] .kpi .value { font-weight:500; letter-spacing:-.03em; }
+  :root[data-skin="console"] .journey-tool { font-weight:600; letter-spacing:-.01em; }
+  :root[data-skin="console"] .panel,
+  :root[data-skin="console"] .kpi,
+  :root[data-skin="console"] a.card,
+  :root[data-skin="console"] .journey-media { border-radius:4px; }
+  :root[data-skin="console"] .industry-chip,
+  :root[data-skin="console"] .guide-badge,
+  :root[data-skin="console"] .guide-head { border-radius:4px; }
+  :root[data-skin="console"] .skin-btn,
+  :root[data-skin="console"] .skin-menu,
+  :root[data-skin="console"] .skin-menu li,
+  :root[data-skin="console"] #theme-toggle,
+  :root[data-skin="console"] .journey-btn { border-radius:4px; }
+  :root[data-skin="console"] .guide-toggle { border-radius:4px; }
+  /* The amber accent is saturated, so the guide tint needs a lighter hand. */
+  :root[data-skin="console"] .panel--guide { background:color-mix(in srgb, var(--accent) 8%, var(--card-bg)); }
+  :root[data-skin="console"][data-theme="dark"] .panel--guide { background:color-mix(in srgb, var(--accent) 9%, var(--card-bg)); }
+
+  /* Skin: aurora. High key jade and cool light, generous radii, soft depth. */
+  :root[data-skin="aurora"] {
+    --page-bg:#eef3f2; --card-bg:#ffffff; --text:#16231f; --muted:#607068;
+    --border:#dde7e3; --accent:#0f7d68;
+    --shadow:0 2px 6px rgba(20,50,44,.06), 0 12px 28px rgba(20,50,44,.05);
+  }
+  :root[data-skin="aurora"][data-theme="dark"] {
+    --page-bg:#0a1512; --card-bg:#11201c; --text:#e6f2ee; --muted:#93a9a1;
+    --border:#1e332d; --accent:#5fd6b4;
+    --shadow:0 2px 6px rgba(0,0,0,.45), 0 12px 28px rgba(0,0,0,.35);
+  }
+  :root[data-skin="aurora"] body { font-family:'Manrope', system-ui, sans-serif; }
+  :root[data-skin="aurora"] h1 { font-weight:800; letter-spacing:-.028em; }
+  :root[data-skin="aurora"] .kpi .value { font-weight:700; letter-spacing:-.02em; }
+  :root[data-skin="aurora"] .journey-tool,
+  :root[data-skin="aurora"] .guide-head h2 { font-weight:700; letter-spacing:-.015em; }
+  :root[data-skin="aurora"] .panel,
+  :root[data-skin="aurora"] .kpi,
+  :root[data-skin="aurora"] a.card,
+  :root[data-skin="aurora"] .journey-media { border-radius:22px; }
+  :root[data-skin="aurora"] .industry-chip,
+  :root[data-skin="aurora"] .guide-badge { border-radius:14px; }
+  :root[data-skin="aurora"] .guide-head { border-radius:18px; }
+  :root[data-skin="aurora"] .skin-btn,
+  :root[data-skin="aurora"] .skin-menu,
+  :root[data-skin="aurora"] #theme-toggle,
+  :root[data-skin="aurora"] .journey-btn { border-radius:14px; }
+  :root[data-skin="aurora"] .skin-menu li { border-radius:10px; }
+  main { max-width:1300px; margin:0 auto; padding:32px 20px 64px; }
+  h1 { font-size:2.625rem; font-weight:700; line-height:1.15; margin-bottom:12px; }
+  .setup { color:var(--muted); font-size:1.125rem; max-width:60rem; margin-bottom:24px; }
+  .panel {
+    background:var(--card-bg); border:1px solid var(--border); border-radius:16px;
+    box-shadow:var(--shadow); padding:24px; margin-bottom:18px;
+  }
+  .panel h2 { font-size:1.125rem; font-weight:600; margin-bottom:10px; }
+  .journey { margin:0 0 0 20px; display:grid; gap:8px; font-size:.9375rem; }
+  .journey b { color:var(--accent); }
+  .kpis { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:18px; margin-bottom:18px; }
+  .kpi {
+    background:var(--card-bg); border:1px solid var(--border); border-radius:16px;
+    box-shadow:var(--shadow); padding:18px 20px;
+  }
+  .kpi .label { color:var(--muted); font-size:.75rem; text-transform:uppercase; letter-spacing:.04em; }
+  .kpi .value { font-size:1.75rem; font-weight:700; margin-top:6px; }
+  .kpi .delta { font-size:.875rem; color:var(--muted); margin-top:4px; }
+  .kpi .bad { color:#dc2626; }
+  :root[data-theme="dark"] .kpi .bad { color:#f87171; }
+  .chart { height:380px; }
+  #orbit-note {
+    border:1px solid #d97706; color:#b45309; background:transparent;
+    border-radius:8px; padding:10px 14px; font-size:.875rem; margin-bottom:18px;
+  }
+  :root[data-theme="dark"] #orbit-note { color:#fcd34d; border-color:#92400e; }
+  .note { font-size:.9375rem; color:var(--muted); }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:18px; }
+  .grid2 .panel { margin-bottom:0; }
+  @media (max-width: 900px) { .grid2 { grid-template-columns:1fr; } }
+  .panel--guide {
+    background:color-mix(in srgb, var(--accent) 11%, var(--card-bg));
+    border-color:color-mix(in srgb, var(--accent) 42%, var(--border));
+  }
+  :root[data-theme="dark"] .panel--guide {
+    background:color-mix(in srgb, var(--accent) 17%, var(--card-bg));
+  }
+  .guide-head {
+    display:flex; align-items:center; gap:12px; cursor:pointer;
+    margin:-8px -10px 0; padding:8px 10px; border-radius:12px;
+    transition:background .15s ease;
+  }
+  .guide-head:hover { background:color-mix(in srgb, var(--accent) 10%, transparent); }
+  .guide-head h2 { margin:0; font-size:1.375rem; letter-spacing:-.01em; }
+  .guide-badge {
+    width:34px; height:34px; border-radius:10px; flex:none;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--accent); background:color-mix(in srgb, var(--accent) 16%, transparent);
+  }
+  .guide-badge svg { width:19px; height:19px; display:block; }
+  .guide-count { font-size:.8125rem; color:var(--muted); }
+  .guide-toggle {
+    margin-left:auto; flex:none; cursor:pointer; font:inherit; font-size:.8125rem; font-weight:600;
+    display:flex; align-items:center; gap:6px; padding:7px 13px; border-radius:999px;
+    color:var(--accent); background:color-mix(in srgb, var(--accent) 12%, transparent);
+    border:1px solid color-mix(in srgb, var(--accent) 34%, transparent);
+    transition:background .15s ease, border-color .15s ease;
+  }
+  .guide-head:hover .guide-toggle { background:color-mix(in srgb, var(--accent) 20%, transparent); border-color:var(--accent); }
+  .guide-toggle:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  .guide-toggle svg { width:15px; height:15px; display:block; transition:transform .15s ease; }
+  .panel--guide.is-collapsed .guide-toggle svg { transform:rotate(-90deg); }
+  .panel--guide.is-collapsed { padding-top:18px; padding-bottom:18px; }
+  .panel--guide.is-collapsed .journey-slider { display:none; }
+  .journey-slider { position:relative; height:230px; padding:14px 46px 0; }
+  .journey-slide { display:none; }
+  .journey-slide.is-active { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:24px; align-items:start; }
+  .journey-slide--nomedia.is-active { grid-template-columns:1fr; }
+  .journey-media {
+    border:1px solid var(--border); border-radius:10px; overflow:hidden;
+    background:#fff; margin:0; box-shadow:var(--shadow);
+  }
+  .journey-media {
+    display:flex; align-items:flex-start; justify-content:flex-end;
+    aspect-ratio:3 / 1; justify-self:end; width:100%;
+  }
+  .journey-media img { display:block; width:100%; height:100%; object-fit:contain; object-position:right center; }
+  @media (max-width: 980px) { .journey-slide.is-active { grid-template-columns:1fr; } }
+  .journey-copy { text-align:left; }
+  .journey-step { color:var(--muted); font-size:.75rem; text-transform:uppercase; letter-spacing:.04em; }
+  .journey-tool { color:var(--accent); font-size:1.25rem; font-weight:600; margin:6px 0 8px; }
+  .journey-what { font-size:.9375rem; margin-bottom:8px; }
+  .journey-how { font-size:.875rem; color:var(--muted); }
+  .journey-how b { color:var(--text); font-weight:600; }
+  .journey-nav { display:flex; align-items:center; justify-content:center; margin-top:10px; }
+  .journey-btn {
+    position:absolute; top:14px; bottom:40px; width:36px; padding:0;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    color:var(--muted); background:color-mix(in srgb, var(--accent) 7%, transparent);
+    border:1px solid color-mix(in srgb, var(--accent) 22%, var(--border)); border-radius:8px;
+  }
+  .journey-btn--prev { left:0; }
+  .journey-btn--next { right:0; }
+  .journey-btn:hover { color:var(--accent); border-color:var(--accent); background:color-mix(in srgb, var(--accent) 14%, transparent); }
+  .journey-btn svg { width:18px; height:18px; display:block; }
+  .journey-dots { display:flex; gap:6px; }
+  .journey-dot { width:8px; height:8px; border-radius:50%; border:0; padding:0; cursor:pointer; background:var(--border); }
+  .journey-dot.is-active { background:var(--demo-accent); }
+  .industry-chip {
+    width:40px; height:40px; border-radius:10px; flex:none;
+    display:flex; align-items:center; justify-content:center;
+    background:color-mix(in srgb, var(--demo-accent) 14%, transparent);
+    color:color-mix(in srgb, var(--demo-accent) 62%, var(--n900));
+  }
+  :root[data-theme="dark"] .industry-chip { color:color-mix(in srgb, var(--demo-accent) 75%, #fff); }
+  .industry-chip svg { width:22px; height:22px; display:block; }
+  footer { color:var(--muted); font-size:.8125rem; margin-top:24px; line-height:1.5; }
+  footer a { color:var(--accent); }
+  .chart { display:flex; align-items:center; justify-content:center; color:var(--muted); }
+</style>
+</head>
+<body>
+<header>
+  <a class="wordmark" href="https://highcharts-orbit.vercel.app/">Highcharts <span>Orbit</span> demos</a>
+  <div class="industry-chip" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.8V5a2 2 0 0 0-4 0v9.8a4 4 0 1 0 4 0z"/><path d="M12 9v6"/><path d="M19 3v4M17 5h4"/></svg></div>
+  <div class="demo-tag">Use case 07 · Energy, live open data</div>
+  <div class="controls">
+    <div class="skin-picker">
+      <button id="skin-btn" class="skin-btn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Design theme">
+        <span id="skin-label">Highcharts theme</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <ul id="skin-menu" class="skin-menu" role="listbox" hidden>
+        <li role="option" tabindex="0" data-skin-value="highcharts">Highcharts theme</li>
+        <li role="option" tabindex="0" data-skin-value="editorial">Editorial theme</li>
+        <li role="option" tabindex="0" data-skin-value="console">Console theme</li>
+        <li role="option" tabindex="0" data-skin-value="aurora">Aurora theme</li>
+      </ul>
+    </div>
+    <button id="theme-toggle" type="button" aria-label="Switch colour theme"></button>
+  </div>
+</header>
+<main>
+  <h1>What does a heat wave do to the power grid?</h1>
+  <p class="setup">Same summer, two grids, opposite answers. In Texas, every extra degree in Houston
+    pushes ERCOT's electricity demand higher, all the way to an all-time record in July. In southern
+    Norway the same heat barely registers, and midday prices dip below zero instead. Every series on this
+    page is fetched live from open APIs when you open it. Use the Orbit toolbar on each chart, and the
+    page bar at the top, to test the link yourself.</p>
+
+  <div id="orbit-note" hidden>The Orbit toolbar did not load. Serve this page from a domain
+    on the Orbit installation's referrer allowlist; opened from a local file the charts
+    degrade silently to plain Highcharts.</div>
+
+  <div id="data-note" class="panel" hidden data-orbit-context="Data loading status"></div>
+
+  <div class="panel panel--guide is-collapsed" data-orbit-context="How to use Orbit in this demo">
+    <div class="guide-head" id="guide-head">
+      <span class="guide-badge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4.5h6a3 3 0 0 1 3 3V20a2.5 2.5 0 0 0-2.5-2.5H2z"/><path d="M22 4.5h-6a3 3 0 0 0-3 3V20a2.5 2.5 0 0 1 2.5-2.5H22z"/></svg></span>
+      <h2>How to use Orbit on this demo</h2>
+      <span class="guide-count" id="guide-count"></span>
+      <button id="guide-toggle" class="guide-toggle" type="button" aria-expanded="false" aria-controls="journey" aria-label="Show the guide"><span id="guide-toggle-text">Show</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+    </div>
+    <div class="journey-slider" id="journey">
+      <div class="journey-slide is-active">
+        <div class="journey-copy">
+          <div class="journey-step">Step 1 of 6</div>
+          <h3 class="journey-tool">Correlations</h3>
+          <p class="journey-what">On the Texas chart, Houston temperature and ERCOT demand move together strongly. Run the same tool on the Norway chart and the link all but disappears.</p>
+          <p class="journey-how"><b>How:</b> Open Analyze in the chart toolbar, then Relationships, and run Correlations.</p>
+        </div>
+        <figure class="journey-media"><img src="shots/menu-analyze-relationships.png" alt="Analyze menu, Relationships, Correlations"></figure>
+      </div>
+      <div class="journey-slide">
+        <div class="journey-copy">
+          <div class="journey-step">Step 2 of 6</div>
+          <h3 class="journey-tool">Anomaly detection</h3>
+          <p class="journey-what">On the Norway chart the negative-price hours light up as outliers. On the Texas chart it is the record afternoons that stand out.</p>
+          <p class="journey-how"><b>How:</b> Open Analyze in the chart toolbar, then Quality, and run Anomaly detection.</p>
+        </div>
+        <figure class="journey-media"><img src="shots/menu-analyze-quality.png" alt="Analyze menu, Quality, Anomaly Detection"></figure>
+      </div>
+      <div class="journey-slide">
+        <div class="journey-copy">
+          <div class="journey-step">Step 3 of 6</div>
+          <h3 class="journey-tool">Trend line</h3>
+          <p class="journey-what">Fit a line to the scatter of temperature against demand: demand climbs far more steeply once Houston passes about 30 C.</p>
+          <p class="journey-how"><b>How:</b> Open Analyze in the chart toolbar, then Trends, and choose Trend Line.</p>
+        </div>
+        <figure class="journey-media"><img src="shots/menu-analyze-trends.png" alt="Analyze menu, Trends, Trend Line"></figure>
+      </div>
+      <div class="journey-slide">
+        <div class="journey-copy">
+          <div class="journey-step">Step 4 of 6</div>
+          <h3 class="journey-tool">Derived series</h3>
+          <p class="journey-what">On the forecast chart, compute actual minus day-ahead forecast to see how far ERCOT's own forecast missed on the hottest afternoons.</p>
+          <p class="journey-how"><b>How:</b> Open Transform in the chart toolbar, then Derived Series, and subtract the forecast from the actual.</p>
+        </div>
+        <figure class="journey-media"><img src="shots/menu-transform.png" alt="Transform menu, Derived Series"></figure>
+      </div>
+      <div class="journey-slide">
+        <div class="journey-copy">
+          <div class="journey-step">Step 5 of 6</div>
+          <h3 class="journey-tool">Filters and Compare</h3>
+          <p class="journey-what">Pick Last 7d in the page filters and every chart follows, including the heatmap. Compare puts two periods side by side.</p>
+          <p class="journey-how"><b>How:</b> Open Filters or Compare in the top bar; the date presets apply to the whole page.</p>
+        </div>
+        <figure class="journey-media"><img src="shots/topbar-compare.png" alt="The Orbit page top bar with the Compare panel open"></figure>
+      </div>
+      <div class="journey-slide">
+        <div class="journey-copy">
+          <div class="journey-step">Step 6 of 6</div>
+          <h3 class="journey-tool">Insights</h3>
+          <p class="journey-what">Ask Insights on the Texas chart. The context behind the chart carries the record date and the source, so the write-up is specific, not generic.</p>
+          <p class="journey-how"><b>How:</b> Open AI in the chart toolbar and choose Insights.</p>
+        </div>
+        <figure class="journey-media"><img src="shots/menu-ai.png" alt="AI menu, Insights"></figure>
+      </div>
+      <button class="journey-btn journey-btn--prev" type="button" data-dir="-1" aria-label="Previous step"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <button class="journey-btn journey-btn--next" type="button" data-dir="1" aria-label="Next step"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
+      <div class="journey-nav"><div class="journey-dots"></div></div>
+    </div>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi" data-orbit-context="KPI">
+      <div class="label">ERCOT peak demand in this window</div>
+      <div class="value bad" id="kpi-peak">…</div>
+      <div class="delta" id="kpi-peak-when">Fetching EIA data</div>
+    </div>
+    <div class="kpi" data-orbit-context="KPI">
+      <div class="label">Hottest hour in Houston</div>
+      <div class="value bad" id="kpi-hot">…</div>
+      <div class="delta" id="kpi-hot-when">Fetching Open-Meteo data</div>
+    </div>
+    <div class="kpi" data-orbit-context="KPI">
+      <div class="label">Lowest NO2 spot price</div>
+      <div class="value" id="kpi-low">…</div>
+      <div class="delta" id="kpi-low-when">Fetching price data</div>
+    </div>
+    <div class="kpi" data-orbit-context="KPI">
+      <div class="label">Heat to demand link, Texas</div>
+      <div class="value" id="kpi-r">…</div>
+      <div class="delta" id="kpi-r-no">Pearson r, hourly</div>
+    </div>
+  </div>
+
+  <div class="panel" data-orbit-context="Background">
+    <p class="note"><strong>What happened:</strong> On 22 July 2026 ERCOT, the Texas grid operator, reported
+      an all-time demand record of 91,308 MW at 5 pm local time, beating a record set the day before. EIA's
+      hourly series shows 91,075 MWh for that hour. Late June brought 40 C to Paris and Frankfurt. Southern
+      Norway, hydro-fed and largely without air conditioning, went the other way: on the hottest days the
+      midday price dipped below zero. This window starts 15 July 2026 and ends today.</p>
+  </div>
+
+  <div class="panel"><div id="chart-texas" class="chart">Fetching live data…</div></div>
+  <div class="panel"><div id="chart-norway" class="chart">Fetching live data…</div></div>
+  <div class="grid2">
+    <div class="panel"><div id="chart-scatter" class="chart">Fetching live data…</div></div>
+    <div class="panel"><div id="chart-forecast" class="chart">Fetching live data…</div></div>
+  </div>
+  <div class="panel"><div id="chart-heat" class="chart">Fetching live data…</div></div>
+
+  <footer id="footer">Live open data. Temperature: <a href="https://open-meteo.com/">Open-Meteo</a> (CC BY 4.0).
+    Texas demand and day-ahead forecast: <a href="https://www.eia.gov/opendata/">U.S. EIA Hourly Electric Grid Monitor</a> (public domain).
+    Southern Norway prices: <a href="https://www.hvakosterstrommen.no/strompris-api">hvakosterstrommen.no</a> (NO2 day-ahead, EUR/MWh).
+    Record context: ERCOT via <a href="https://www.houstonchronicle.com/business/energy/article/ercot-power-record-heat-texas-summer-22355892.php">Houston Chronicle</a>.
+    All times UTC. <span id="fetched-at"></span></footer>
+</main>
+
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
+<script src="https://code.highcharts.com/modules/heatmap.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/annotations.js"></script>
+<script src="https://orbit.highsoftlabs.com/module/5150599f-09f3-4b54-a398-e60cb01da393/orbit.js"></script>
+<script>
+'use strict';
+
+/* Design skins: page tokens live in CSS, chart palettes here.
+   Editorial is an original palette and type pairing inspired by editorial
+   data-report layouts; no colours or fonts are copied from another site. */
+var SKINS = {
+  highcharts: {
+    font: "'IBM Plex Sans', sans-serif",
+    palette: {
+      colorScheme: 'light dark',
+      light: { backgroundColor: '#ffffff', neutralColor: '#18171c', highlightColor: '#626bd0' },
+      dark:  { backgroundColor: '#18171c', neutralColor: '#f7f7f8', highlightColor: '#8791ff' },
+      colors: ['#2caffe', '#544fc5', '#00e272', '#fe6a35', '#6b8abc', '#d568fb', '#2ee0ca', '#fa4b42', '#f9c80e']
+    }
+  },
+  editorial: {
+    font: "'Instrument Sans', system-ui, sans-serif",
+    palette: {
+      colorScheme: 'light dark',
+      light: { backgroundColor: '#fffdf8', neutralColor: '#1c1a17', highlightColor: '#10473f' },
+      dark:  { backgroundColor: '#1e1c17', neutralColor: '#f2efe6', highlightColor: '#7fc0a9' },
+      colors: ['#2e6f5e', '#c96f3f', '#4a6fa5', '#b8894a', '#7a5c8e', '#4f8f8a', '#a8544e', '#6b8f3d', '#8a7f6d']
+    }
+  },
+  console: {
+    font: "'Space Grotesk', system-ui, sans-serif",
+    palette: {
+      colorScheme: 'light dark',
+      light: { backgroundColor: '#ffffff', neutralColor: '#18181b', highlightColor: '#9a5b06' },
+      dark:  { backgroundColor: '#161618', neutralColor: '#ececee', highlightColor: '#f0b429' },
+      colors: ['#c47a05', '#3d84c6', '#d2603f', '#57935f', '#8368cf', '#c2559a', '#2f9c92', '#8a8236', '#6e7887']
+    }
+  },
+  aurora: {
+    font: "'Manrope', system-ui, sans-serif",
+    palette: {
+      colorScheme: 'light dark',
+      light: { backgroundColor: '#ffffff', neutralColor: '#16231f', highlightColor: '#0f7d68' },
+      dark:  { backgroundColor: '#11201c', neutralColor: '#e6f2ee', highlightColor: '#5fd6b4' },
+      colors: ['#149574', '#6b6fe0', '#dd6a55', '#3796cd', '#a865cf', '#c07f14', '#2c8598', '#6f9e46', '#7c8aa5']
+    }
+  }
+};
+var activeSkin = document.documentElement.getAttribute('data-skin') || 'highcharts';
+var activeSkinDef = SKINS[activeSkin] || SKINS.highcharts;
+
+Highcharts.setOptions({
+  chart: { style: { fontFamily: activeSkinDef.font } },
+  palette: activeSkinDef.palette,
+  credits: { enabled: false },
+  time: { timezone: 'UTC' },
+  title: { align: 'left', style: { fontWeight: '600', fontSize: '18px' } },
+  subtitle: { align: 'left' }
+});
+
+/* Live data. Window: from 15 July 2026 (the week of the ERCOT record) to today,
+   hourly, all timestamps UTC. Every point carries an explicit [x, y] so the
+   page-mode date filter works, and the last point is today so the presets
+   (Today, Last 7d, Last 30d) select real data. */
+var HOUR = 3600 * 1000;
+var TODAY = (function () {
+  var d = new Date();
+  return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+})();
+var WINDOW_START = Math.max(Date.UTC(2026, 6, 15), TODAY - 90 * 24 * HOUR);
+function isoDay(ms) { return new Date(ms).toISOString().slice(0, 10); }
+var START_DAY = isoDay(WINDOW_START);
+var END_DAY = isoDay(TODAY);
+
+/* Sources. The weather base URL lives in one place so it can be swapped for the
+   commercial Open-Meteo endpoint or another provider without touching charts. */
+var SOURCES = {
+  weather: 'https://api.open-meteo.com/v1/forecast',
+  ercot: '/api/ercot',
+  no2: '/api/no2'
+};
+var PLACES = {
+  houston: { lat: 29.76, lon: -95.37, name: 'Houston' },
+  kristiansand: { lat: 58.15, lon: 8.00, name: 'Kristiansand' }
+};
+
+function fetchJSON(url) {
+  return fetch(url).then(function (r) {
+    if (!r.ok) { throw new Error(url.split('?')[0] + ' returned HTTP ' + r.status); }
+    return r.json();
+  });
+}
+function fetchTemperature(p) {
+  var u = SOURCES.weather + '?latitude=' + p.lat + '&longitude=' + p.lon +
+    '&hourly=temperature_2m&start_date=' + START_DAY + '&end_date=' + END_DAY + '&timezone=UTC';
+  return fetchJSON(u).then(function (j) {
+    var out = [];
+    for (var i = 0; i < j.hourly.time.length; i++) {
+      var v = j.hourly.temperature_2m[i];
+      var t = Date.parse(j.hourly.time[i] + ':00Z');
+      if (v !== null && t <= Date.now()) { out.push([t, v]); }
+    }
+    return out;
+  });
+}
+
+/* Small helpers */
+function pearson(a, b) {
+  var map = {}, i, n = 0, sx = 0, sy = 0, sxx = 0, syy = 0, sxy = 0;
+  for (i = 0; i < b.length; i++) { map[b[i][0]] = b[i][1]; }
+  for (i = 0; i < a.length; i++) {
+    var y = map[a[i][0]];
+    if (y === undefined) { continue; }
+    var x = a[i][1];
+    n++; sx += x; sy += y; sxx += x * x; syy += y * y; sxy += x * y;
+  }
+  if (n < 3) { return NaN; }
+  var cov = sxy - sx * sy / n;
+  var vx = sxx - sx * sx / n, vy = syy - sy * sy / n;
+  return cov / Math.sqrt(vx * vy);
+}
+function maxPoint(a) { return a.reduce(function (m, p) { return p[1] > m[1] ? p : m; }, a[0]); }
+function minPoint(a) { return a.reduce(function (m, p) { return p[1] < m[1] ? p : m; }, a[0]); }
+function fmtWhen(ms, tz) {
+  return new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: tz || 'UTC' }).format(new Date(ms));
+}
+function setText(id, s) { var el = document.getElementById(id); if (el) { el.textContent = s; } }
+function joinOnTime(a, b) {
+  /* [x(a.y), y(b.y)] pairs for matching timestamps, for the scatter */
+  var map = {}, out = [], i;
+  for (i = 0; i < b.length; i++) { map[b[i][0]] = b[i][1]; }
+  for (i = 0; i < a.length; i++) {
+    if (map[a[i][0]] !== undefined) { out.push({ x: a[i][1], y: map[a[i][0]], t: a[i][0] }); }
+  }
+  return out;
+}
+
+function showDataNote(msg) {
+  var n = document.getElementById('data-note');
+  n.hidden = false;
+  n.innerHTML = '<p class="note">' + msg + '</p>';
+}
+
+Promise.all([
+  fetchTemperature(PLACES.houston),
+  fetchTemperature(PLACES.kristiansand),
+  fetchJSON(SOURCES.ercot + '?start=' + START_DAY + '&end=' + END_DAY),
+  fetchJSON(SOURCES.no2 + '?start=' + START_DAY + '&end=' + END_DAY + '&area=NO2')
+]).then(function (r) {
+  var houston = r[0], kristiansand = r[1];
+  var demand = r[2].demand.map(function (p) { return [p[0], Math.round(p[1] / 100) / 10]; }); /* GW, one decimal */
+  var forecast = r[2].forecast.map(function (p) { return [p[0], Math.round(p[1] / 100) / 10]; });
+  var price = r[3].price.filter(function (p) { return p[0] >= WINDOW_START; });
+  if (!houston.length || !demand.length || !price.length) { throw new Error('one of the sources returned no rows'); }
+  buildPage({ houston: houston, kristiansand: kristiansand, demand: demand, forecast: forecast, price: price });
+  setText('fetched-at', 'Fetched ' + fmtWhen(Date.now()) + ' UTC.');
+}).catch(function (e) {
+  showDataNote('<strong>Live data did not load:</strong> ' + e.message + '. The APIs behind this page are open but not guaranteed; reload in a minute.');
+  Array.prototype.forEach.call(document.querySelectorAll('.chart'), function (el) { el.textContent = 'No data'; });
+});
+
+function buildPage(d) {
+  var rTexas = pearson(d.houston, d.demand);
+  var rNorway = pearson(d.kristiansand, d.price);
+  var peak = maxPoint(d.demand), hot = maxPoint(d.houston), low = minPoint(d.price);
+  var negHours = d.price.filter(function (p) { return p[1] < 0; }).length;
+
+  setText('kpi-peak', peak[1].toFixed(1) + ' GW');
+  setText('kpi-peak-when', fmtWhen(peak[0], 'America/Chicago') + ' Texas time');
+  setText('kpi-hot', hot[1].toFixed(1) + ' °C');
+  setText('kpi-hot-when', fmtWhen(hot[0], 'America/Chicago') + ' Texas time');
+  setText('kpi-low', low[1].toFixed(1) + ' EUR/MWh');
+  setText('kpi-low-when', negHours + ' hours below zero, lowest ' + fmtWhen(low[0], 'Europe/Oslo') + ' Oslo time');
+  setText('kpi-r', 'r = ' + rTexas.toFixed(2));
+  setText('kpi-r-no', 'Southern Norway, temperature vs price: r = ' + rNorway.toFixed(2));
+
+  var ctxCommon = 'Hourly data from ' + START_DAY + ' to ' + END_DAY + ', UTC. Temperature from Open-Meteo. ' +
+    'ERCOT demand from the U.S. EIA hourly grid monitor. NO2 prices from hvakosterstrommen.no.';
+
+  Highcharts.chart('chart-texas', {
+    orbit: {
+      id: 'uc07-texas',
+      llmContext: { text: [
+        'Texas: hourly Houston air temperature (C) against ERCOT electricity demand (GW). Peak demand in this window is ' + peak[1].toFixed(1) + ' GW at ' + fmtWhen(peak[0], 'America/Chicago') + ' Texas time. Pearson r between temperature and demand is ' + rTexas.toFixed(2) + '.',
+        'ERCOT reported an all-time record of 91,308 MW at 5 pm local time on 22 July 2026, the day after the previous record. Air conditioning is the driver: demand rises steeply once Houston passes about 30 C.',
+        ctxCommon
+      ] }
+    },
+    title: { text: 'Texas: Houston temperature and ERCOT electricity demand' },
+    subtitle: { text: 'Try: open Correlations, then Anomaly detection on the demand series' },
+    xAxis: { type: 'datetime' },
+    yAxis: [
+      { title: { text: 'Demand (GW)' } },
+      { title: { text: 'Temperature (°C)' }, opposite: true }
+    ],
+    tooltip: { shared: true },
+    plotOptions: { series: { marker: { enabled: false } } },
+    series: [
+      { name: 'ERCOT demand', data: d.demand, tooltip: { valueSuffix: ' GW' } },
+      { name: 'Houston temperature', data: d.houston, yAxis: 1, tooltip: { valueSuffix: ' °C' }, color: '#fa4b42' }
+    ]
+  });
+
+  Highcharts.chart('chart-norway', {
+    orbit: {
+      id: 'uc07-norway',
+      llmContext: { text: [
+        'Southern Norway (bidding zone NO2): hourly Kristiansand air temperature (C) against the day-ahead spot price (EUR/MWh). Pearson r between temperature and price is ' + rNorway.toFixed(2) + ', so heat does not drive price here. ' + negHours + ' hours in the window had a negative price; the lowest was ' + low[1].toFixed(1) + ' EUR/MWh at ' + fmtWhen(low[0], 'Europe/Oslo') + ' Oslo time.',
+        'Norway has almost no air conditioning and is supplied by hydro; midday solar and wind across connected European markets push prices to zero or below on sunny, windy days.',
+        ctxCommon
+      ] }
+    },
+    title: { text: 'Southern Norway (NO2): temperature and day-ahead spot price' },
+    subtitle: { text: 'Try: open Anomaly detection; the hours below zero light up' },
+    xAxis: { type: 'datetime' },
+    yAxis: [
+      { title: { text: 'Price (EUR/MWh)' }, plotLines: [{ value: 0, width: 1, color: '#918fa3', zIndex: 3 }] },
+      { title: { text: 'Temperature (°C)' }, opposite: true }
+    ],
+    tooltip: { shared: true },
+    plotOptions: { series: { marker: { enabled: false } } },
+    series: [
+      { name: 'NO2 day-ahead price', data: d.price, tooltip: { valueSuffix: ' EUR/MWh' }, color: '#544fc5' },
+      { name: 'Kristiansand temperature', data: d.kristiansand, yAxis: 1, tooltip: { valueSuffix: ' °C' }, color: '#fa4b42' }
+    ]
+  });
+
+  var pairs = joinOnTime(d.houston, d.demand);
+  Highcharts.chart('chart-scatter', {
+    chart: { type: 'scatter' },
+    orbit: {
+      id: 'uc07-scatter',
+      llmContext: { text: [
+        'Each point is one hour: Houston temperature on x, ERCOT demand on y, ' + pairs.length + ' hours. The cloud is flat and wide below about 25 C and turns sharply upward above 30 C, the air-conditioning response.',
+        ctxCommon
+      ] }
+    },
+    title: { text: 'Texas: demand against temperature, hour by hour' },
+    subtitle: { text: 'Try: open Trend Line; the slope steepens above about 30 °C' },
+    xAxis: { title: { text: 'Houston temperature (°C)' } },
+    yAxis: { title: { text: 'ERCOT demand (GW)' } },
+    legend: { enabled: false },
+    tooltip: { headerFormat: '', pointFormat: '{point.x:.1f} °C, {point.y:.1f} GW' },
+    series: [{
+      name: 'Hourly readings',
+      data: pairs.map(function (p) { return [p.x, p.y]; }),
+      marker: { radius: 2.5 },
+      color: '#fe6a35'
+    }]
+  });
+
+  Highcharts.chart('chart-forecast', {
+    orbit: {
+      id: 'uc07-forecast',
+      llmContext: { text: [
+        'ERCOT actual hourly demand against ERCOT\'s own day-ahead demand forecast, both in GW from the EIA grid monitor. The gap between them is the forecast error; the largest misses fall on the hottest afternoons.',
+        ctxCommon
+      ] }
+    },
+    title: { text: 'Texas: did the day-ahead forecast see the heat coming?' },
+    subtitle: { text: 'Try: open Derived Series and compute actual minus forecast' },
+    xAxis: { type: 'datetime' },
+    yAxis: { title: { text: 'Demand (GW)' } },
+    tooltip: { shared: true, valueSuffix: ' GW' },
+    plotOptions: { series: { marker: { enabled: false } } },
+    series: [
+      { name: 'Actual demand', data: d.demand },
+      { name: 'Day-ahead forecast', data: d.forecast, dashStyle: 'ShortDash', color: '#918fa3' }
+    ]
+  });
+
+  /* Heatmap: hour of day (Texas time) by date */
+  var days = [], dayIndex = {}, cells = [];
+  var fmtDay = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Chicago', year: 'numeric', month: '2-digit', day: '2-digit' });
+  var fmtHour = new Intl.DateTimeFormat('en-GB', { timeZone: 'America/Chicago', hour: '2-digit', hour12: false });
+  d.demand.forEach(function (p) {
+    var day = fmtDay.format(new Date(p[0]));
+    var h = parseInt(fmtHour.format(new Date(p[0])), 10) % 24;
+    if (dayIndex[day] === undefined) { dayIndex[day] = days.length; days.push(day); }
+    cells.push([dayIndex[day], h, p[1]]);
+  });
+  Highcharts.chart('chart-heat', {
+    chart: { type: 'heatmap' },
+    orbit: {
+      id: 'uc07-heat',
+      llmContext: { text: [
+        'ERCOT demand in GW by hour of day (Texas time, rows) and date (columns). The dark ridge in the late afternoon is the air-conditioning peak; it is widest and darkest on the hottest days.',
+        ctxCommon
+      ] }
+    },
+    title: { text: 'Texas: the shape of a hot day, demand by hour and date' },
+    subtitle: { text: 'Try: filter the page to Last 7d in the top bar; the ridge follows' },
+    xAxis: { categories: days, labels: { step: Math.ceil(days.length / 12) }, title: { text: 'Date' } },
+    yAxis: { categories: Array.apply(null, Array(24)).map(function (_, i) { return (i < 10 ? '0' : '') + i + ':00'; }), title: { text: 'Hour, Texas time' }, reversed: true },
+    colorAxis: { minColor: '#fef3c7', maxColor: '#b91c1c' },
+    legend: { align: 'right', layout: 'vertical', verticalAlign: 'middle', symbolHeight: 260 },
+    tooltip: { formatter: function () { return (function (p) { return p.series.xAxis.categories[p.x] + ' ' + p.series.yAxis.categories[p.y] + ': <b>' + p.value.toFixed(1); })(this.point || this) + ' GW</b>'; } },
+    series: [{ name: 'Demand (GW)', data: cells, borderWidth: 0 }]
+  });
+
+  if (window.Highcharts && Highcharts.orbitPage) {
+    Highcharts.orbitPage({ mode: 'augment', relationships: { enabled: true } });
+  }
+}
+if (!window.Highcharts || !Highcharts.orbit) {
+  document.getElementById('orbit-note').hidden = false;
+}
+
+/* Journey slider: one Orbit feature per slide */
+(function () {
+  var root = document.getElementById('journey');
+  if (!root) { return; }
+  var slides = Array.prototype.slice.call(root.querySelectorAll('.journey-slide'));
+  var dotsWrap = root.querySelector('.journey-dots');
+  var idx = 0;
+  slides.forEach(function (sl, i) {
+    var d = document.createElement('button');
+    d.className = 'journey-dot';
+    d.type = 'button';
+    d.setAttribute('aria-label', 'Step ' + (i + 1) + ' of ' + slides.length);
+    d.addEventListener('click', function () { go(i); });
+    dotsWrap.appendChild(d);
+  });
+  function go(i) {
+    idx = (i + slides.length) % slides.length;
+    slides.forEach(function (sl, j) { sl.classList.toggle('is-active', j === idx); });
+    Array.prototype.forEach.call(dotsWrap.children, function (d, j) { d.classList.toggle('is-active', j === idx); });
+  }
+  Array.prototype.forEach.call(root.querySelectorAll('.journey-btn'), function (b) {
+    b.addEventListener('click', function () { go(idx + parseInt(b.getAttribute('data-dir'), 10)); });
+  });
+  go(0);
+})();
+
+/* Guide box show and hide */
+(function () {
+  var panel = document.querySelector('.panel--guide');
+  var head = document.getElementById('guide-head');
+  var btn = document.getElementById('guide-toggle');
+  var txt = document.getElementById('guide-toggle-text');
+  var count = document.getElementById('guide-count');
+  if (!panel || !head || !btn) { return; }
+  if (count) { count.textContent = panel.querySelectorAll('.journey-slide').length + ' steps'; }
+  function set(collapsed) {
+    panel.classList.toggle('is-collapsed', collapsed);
+    btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+    btn.setAttribute('aria-label', collapsed ? 'Show the guide' : 'Hide the guide');
+    if (txt) { txt.textContent = collapsed ? 'Show' : 'Hide'; }
+    try { localStorage.setItem('orbit-demo-guide', collapsed ? 'closed' : 'open'); } catch (e) {}
+  }
+  head.addEventListener('click', function () { set(!panel.classList.contains('is-collapsed')); });
+  /* Closed by default; only a stored 'open' opens it. */
+  var stored = 'closed';
+  try { stored = localStorage.getItem('orbit-demo-guide') || 'closed'; } catch (e) {}
+  set(stored !== 'open');
+})();
+
+/* Skin (design theme) and light/dark controls */
+(function () {
+  var SUN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+  var MOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
+  var toggle = document.getElementById('theme-toggle');
+  var skinBtn = document.getElementById('skin-btn');
+  var skinMenu = document.getElementById('skin-menu');
+  var skinLabel = document.getElementById('skin-label');
+  var skinItems = Array.prototype.slice.call(skinMenu.querySelectorAll('[data-skin-value]'));
+
+  function paintToggle() {
+    var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    toggle.innerHTML = dark ? SUN : MOON;
+    toggle.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+    toggle.setAttribute('title', dark ? 'Switch to light mode' : 'Switch to dark mode');
+  }
+
+  function applySkin(name, redrawCharts) {
+    var s = SKINS[name] || SKINS.highcharts;
+    document.documentElement.setAttribute('data-skin', name);
+    try { localStorage.setItem('orbit-demo-skin', name); } catch (e) {}
+    if (redrawCharts && window.Highcharts && Highcharts.charts) {
+      Highcharts.charts.filter(Boolean).forEach(function (c) {
+        c.update({ palette: s.palette, chart: { style: { fontFamily: s.font } } }, false);
+        c.redraw(false);
+      });
+    }
+  }
+
+  function closeSkinMenu() { skinMenu.hidden = true; skinBtn.setAttribute('aria-expanded', 'false'); }
+  function markSkin(name) {
+    skinItems.forEach(function (it) {
+      var on = it.getAttribute('data-skin-value') === name;
+      it.setAttribute('aria-selected', on ? 'true' : 'false');
+      if (on) { skinLabel.textContent = it.textContent; }
+    });
+  }
+
+  skinBtn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    if (skinMenu.hidden) {
+      skinMenu.hidden = false;
+      skinBtn.setAttribute('aria-expanded', 'true');
+    } else {
+      closeSkinMenu();
+    }
+  });
+  skinItems.forEach(function (it) {
+    it.addEventListener('click', function () {
+      var v = it.getAttribute('data-skin-value');
+      applySkin(v, true);
+      markSkin(v);
+      closeSkinMenu();
+    });
+    it.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); it.click(); }
+    });
+  });
+  document.addEventListener('click', closeSkinMenu);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeSkinMenu(); } });
+  markSkin(activeSkin);
+
+  toggle.addEventListener('click', function () {
+    var el = document.documentElement;
+    var mode = el.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    el.setAttribute('data-theme', mode);
+    el.classList.toggle('highcharts-dark', mode === 'dark');
+    el.classList.toggle('highcharts-light', mode === 'light');
+    try { localStorage.setItem('orbit-demo-theme', mode); } catch (e) {}
+    paintToggle();
+  });
+
+  paintToggle();
+})();
+</script>
+</body>
+</html>
