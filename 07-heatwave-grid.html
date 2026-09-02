@@ -719,14 +719,15 @@ function buildPage(d) {
   });
 
   /* Heatmap: hour of day (Texas time) by date */
-  var days = [], dayIndex = {}, cells = [];
+  /* x is the Texas calendar day as a UTC midnight timestamp, so the heatmap
+     shares the page's datetime axis and follows the page-mode date filter. */
+  var cells = [], DAY = 24 * HOUR;
   var fmtDay = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Chicago', year: 'numeric', month: '2-digit', day: '2-digit' });
   var fmtHour = new Intl.DateTimeFormat('en-GB', { timeZone: 'America/Chicago', hour: '2-digit', hour12: false });
   d.demand.forEach(function (p) {
-    var day = fmtDay.format(new Date(p[0]));
+    var day = Date.parse(fmtDay.format(new Date(p[0])) + 'T00:00:00Z');
     var h = parseInt(fmtHour.format(new Date(p[0])), 10) % 24;
-    if (dayIndex[day] === undefined) { dayIndex[day] = days.length; days.push(day); }
-    cells.push([dayIndex[day], h, p[1]]);
+    cells.push([day, h, p[1]]);
   });
   Highcharts.chart('chart-heat', {
     chart: { type: 'heatmap' },
@@ -739,12 +740,12 @@ function buildPage(d) {
     },
     title: { text: 'Texas: the shape of a hot day, demand by hour and date' },
     subtitle: { text: 'Try: filter the page to Last 7d in the top bar; the ridge follows' },
-    xAxis: { categories: days, labels: { step: Math.ceil(days.length / 12) }, title: { text: 'Date' } },
+    xAxis: { type: 'datetime', title: { text: 'Date (Texas calendar day)' } },
     yAxis: { categories: Array.apply(null, Array(24)).map(function (_, i) { return (i < 10 ? '0' : '') + i + ':00'; }), title: { text: 'Hour, Texas time' }, reversed: true, min: 0, endOnTick: false, startOnTick: false, tickInterval: 2 },
     colorAxis: { minColor: '#fef3c7', maxColor: '#b91c1c' },
     legend: { align: 'right', layout: 'vertical', verticalAlign: 'middle', symbolHeight: 260 },
-    tooltip: { formatter: function () { return (function (p) { return p.series.xAxis.categories[p.x] + ' ' + p.series.yAxis.categories[p.y] + ': <b>' + p.value.toFixed(1); })(this.point || this) + ' GW</b>'; } },
-    series: [{ name: 'Demand (GW)', data: cells, borderWidth: 0 }]
+    tooltip: { formatter: function () { return (function (p) { return Highcharts.dateFormat('%e %b', p.x) + ' ' + p.series.yAxis.categories[p.y] + ': <b>' + p.value.toFixed(1); })(this.point || this) + ' GW</b>'; } },
+    series: [{ name: 'Demand (GW)', data: cells, colsize: DAY, borderWidth: 0 }]
   });
 
   if (window.Highcharts && Highcharts.orbitPage) {
