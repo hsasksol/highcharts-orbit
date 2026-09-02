@@ -318,11 +318,11 @@
 </header>
 <main>
   <h1>What does a heat wave do to the power grid?</h1>
-  <p class="setup">Same summer, two grids, opposite answers. In Texas, every extra degree in Houston
-    pushes ERCOT's electricity demand higher, all the way to an all-time record in July. In southern
-    Norway the same heat barely registers, and midday prices dip below zero instead. Every series on this
-    page is fetched live from open APIs when you open it. Use the Orbit toolbar on each chart, and the
-    page bar at the top, to test the link yourself.</p>
+  <p class="setup">Same summer, two grids, two different answers. In Texas, every extra degree in Houston
+    pushes ERCOT's electricity demand higher, all the way to an all-time record in July. In France the
+    heat shows up in the price instead: Paris at 40 C and the evening day-ahead price several times its
+    usual level. Every series on this page is fetched live from open APIs when you open it. Use the Orbit
+    toolbar on each chart, and the page bar at the top, to test the link yourself.</p>
 
   <div id="orbit-note" hidden>The Orbit toolbar did not load. Serve this page from a domain
     on the Orbit installation's referrer allowlist; opened from a local file the charts
@@ -342,7 +342,7 @@
         <div class="journey-copy">
           <div class="journey-step">Step 1 of 6</div>
           <h3 class="journey-tool">Correlations</h3>
-          <p class="journey-what">On the Texas chart, Houston temperature and ERCOT demand move together strongly. Run the same tool on the Norway chart and the link all but disappears.</p>
+          <p class="journey-what">On the Texas chart, Houston temperature and ERCOT demand move together strongly. Run it on the France chart and it is the price, not the demand, that follows the heat.</p>
           <p class="journey-how"><b>How:</b> Open Analyze in the chart toolbar, then Relationships, and run Correlations.</p>
         </div>
         <figure class="journey-media"><img src="shots/menu-analyze-relationships.png" alt="Analyze menu, Relationships, Correlations"></figure>
@@ -351,7 +351,7 @@
         <div class="journey-copy">
           <div class="journey-step">Step 2 of 6</div>
           <h3 class="journey-tool">Anomaly detection</h3>
-          <p class="journey-what">On the Norway chart the negative-price hours light up as outliers. On the Texas chart it is the record afternoons that stand out.</p>
+          <p class="journey-what">On the France chart the evening price spikes on the hottest days light up as outliers. On the Texas chart it is the record afternoons that stand out.</p>
           <p class="journey-how"><b>How:</b> Open Analyze in the chart toolbar, then Quality, and run Anomaly detection.</p>
         </div>
         <figure class="journey-media"><img src="shots/menu-analyze-quality.png" alt="Analyze menu, Quality, Anomaly Detection"></figure>
@@ -360,7 +360,7 @@
         <div class="journey-copy">
           <div class="journey-step">Step 3 of 6</div>
           <h3 class="journey-tool">Trend line</h3>
-          <p class="journey-what">Fit a line to the scatter of temperature against demand: demand climbs far more steeply once Houston passes about 30 C.</p>
+          <p class="journey-what">Fit a line to either scatter: Texas demand climbs steeply once Houston passes about 30 C, and the French price does the same once Paris does.</p>
           <p class="journey-how"><b>How:</b> Open Analyze in the chart toolbar, then Trends, and choose Trend Line.</p>
         </div>
         <figure class="journey-media"><img src="shots/menu-analyze-trends.png" alt="Analyze menu, Trends, Trend Line"></figure>
@@ -405,13 +405,13 @@
       <div class="delta" id="kpi-peak-when">Fetching EIA data</div>
     </div>
     <div class="kpi" data-orbit-context="KPI">
-      <div class="label">Hottest hour in Houston</div>
+      <div class="label">Hottest hour in Paris</div>
       <div class="value bad" id="kpi-hot">…</div>
       <div class="delta" id="kpi-hot-when">Fetching Open-Meteo data</div>
     </div>
     <div class="kpi" data-orbit-context="KPI">
-      <div class="label">Lowest NO2 spot price</div>
-      <div class="value" id="kpi-low">…</div>
+      <div class="label">Highest day-ahead price, France</div>
+      <div class="value bad" id="kpi-low">…</div>
       <div class="delta" id="kpi-low-when">Fetching price data</div>
     </div>
     <div class="kpi" data-orbit-context="KPI">
@@ -424,22 +424,23 @@
   <div class="panel" data-orbit-context="Background">
     <p class="note"><strong>What happened:</strong> On 22 July 2026 ERCOT, the Texas grid operator, reported
       an all-time demand record of 91,308 MW at 5 pm local time, beating a record set the day before. EIA's
-      hourly series shows 91,075 MWh for that hour. Late June brought 40 C to Paris and Frankfurt. Southern
-      Norway, hydro-fed and largely without air conditioning, went the other way: on the hottest days the
-      midday price dipped below zero. This window starts 15 July 2026 and ends today.</p>
+      hourly series shows 91,075 MWh for that hour. In Europe, successive heat waves in June and July pushed
+      Paris past 40 C; air conditioning is far less common there, so demand moves less, but scarce evening
+      supply sends the day-ahead price up instead. This window starts 18 June 2026 and ends today.</p>
   </div>
 
   <div class="panel"><div id="chart-texas" class="chart is-loading">Fetching live data…</div></div>
-  <div class="panel"><div id="chart-norway" class="chart is-loading">Fetching live data…</div></div>
+  <div class="panel"><div id="chart-france" class="chart is-loading">Fetching live data…</div></div>
   <div class="grid2">
     <div class="panel"><div id="chart-scatter" class="chart is-loading">Fetching live data…</div></div>
-    <div class="panel"><div id="chart-forecast" class="chart is-loading">Fetching live data…</div></div>
+    <div class="panel"><div id="chart-scatter-fr" class="chart is-loading">Fetching live data…</div></div>
   </div>
+  <div class="panel"><div id="chart-forecast" class="chart is-loading">Fetching live data…</div></div>
   <div class="panel"><div id="chart-heat" class="chart is-loading">Fetching live data…</div></div>
 
   <footer id="footer">Live open data. Temperature: <a href="https://open-meteo.com/">Open-Meteo</a> (CC BY 4.0).
     Texas demand and day-ahead forecast: <a href="https://www.eia.gov/opendata/">U.S. EIA Hourly Electric Grid Monitor</a> (public domain).
-    Southern Norway prices: <a href="https://www.hvakosterstrommen.no/strompris-api">hvakosterstrommen.no</a> (NO2 day-ahead, EUR/MWh).
+    French day-ahead prices: <a href="https://api.energy-charts.info/">Energy-Charts, Fraunhofer ISE</a> (data from Bundesnetzagentur | SMARD.de, CC BY 4.0), hourly means of quarter-hour values.
     Record context: ERCOT via <a href="https://www.houstonchronicle.com/business/energy/article/ercot-power-record-heat-texas-summer-22355892.php">Houston Chronicle</a>.
     All times UTC. <span id="fetched-at"></span></footer>
 </main>
@@ -506,7 +507,7 @@ Highcharts.setOptions({
   subtitle: { align: 'left' }
 });
 
-/* Live data. Window: from 15 July 2026 (the week of the ERCOT record) to today,
+/* Live data. Window: from 18 June 2026 (the first European heat wave) to today,
    hourly, all timestamps UTC. Every point carries an explicit [x, y] so the
    page-mode date filter works, and the last point is today so the presets
    (Today, Last 7d, Last 30d) select real data. */
@@ -515,7 +516,7 @@ var TODAY = (function () {
   var d = new Date();
   return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
 })();
-var WINDOW_START = Math.max(Date.UTC(2026, 6, 15), TODAY - 90 * 24 * HOUR);
+var WINDOW_START = Math.max(Date.UTC(2026, 5, 18), TODAY - 76 * 24 * HOUR); /* Open-Meteo's forecast endpoint serves about 76 days of history */
 function isoDay(ms) { return new Date(ms).toISOString().slice(0, 10); }
 var START_DAY = isoDay(WINDOW_START);
 var END_DAY = isoDay(TODAY);
@@ -525,11 +526,11 @@ var END_DAY = isoDay(TODAY);
 var SOURCES = {
   weather: 'https://api.open-meteo.com/v1/forecast',
   ercot: '/api/ercot',
-  no2: '/api/no2'
+  price: '/api/price'
 };
 var PLACES = {
   houston: { lat: 29.76, lon: -95.37, name: 'Houston' },
-  kristiansand: { lat: 58.15, lon: 8.00, name: 'Kristiansand' }
+  paris: { lat: 48.86, lon: 2.35, name: 'Paris' }
 };
 
 function fetchJSON(url) {
@@ -591,16 +592,16 @@ function showDataNote(msg) {
 
 Promise.all([
   fetchTemperature(PLACES.houston),
-  fetchTemperature(PLACES.kristiansand),
+  fetchTemperature(PLACES.paris),
   fetchJSON(SOURCES.ercot + '?start=' + START_DAY + '&end=' + END_DAY),
-  fetchJSON(SOURCES.no2 + '?start=' + START_DAY + '&end=' + END_DAY + '&area=NO2')
+  fetchJSON(SOURCES.price + '?bzn=FR&start=' + START_DAY + '&end=' + END_DAY)
 ]).then(function (r) {
-  var houston = r[0], kristiansand = r[1];
+  var houston = r[0], paris = r[1];
   var demand = r[2].demand.map(function (p) { return [p[0], Math.round(p[1] / 100) / 10]; }); /* GW, one decimal */
   var forecast = r[2].forecast.map(function (p) { return [p[0], Math.round(p[1] / 100) / 10]; });
   var price = r[3].price.filter(function (p) { return p[0] >= WINDOW_START; });
   if (!houston.length || !demand.length || !price.length) { throw new Error('one of the sources returned no rows'); }
-  buildPage({ houston: houston, kristiansand: kristiansand, demand: demand, forecast: forecast, price: price });
+  buildPage({ houston: houston, paris: paris, demand: demand, forecast: forecast, price: price });
   setText('fetched-at', 'Fetched ' + fmtWhen(Date.now()) + ' UTC.');
 }).catch(function (e) {
   showDataNote('<strong>Live data did not load:</strong> ' + e.message + '. The APIs behind this page are open but not guaranteed; reload in a minute.');
@@ -610,21 +611,21 @@ Promise.all([
 function buildPage(d) {
   Array.prototype.forEach.call(document.querySelectorAll('.chart'), function (el) { el.classList.remove('is-loading'); el.textContent = ''; });
   var rTexas = pearson(d.houston, d.demand);
-  var rNorway = pearson(d.kristiansand, d.price);
-  var peak = maxPoint(d.demand), hot = maxPoint(d.houston), low = minPoint(d.price);
+  var rFrance = pearson(d.paris, d.price);
+  var peak = maxPoint(d.demand), hot = maxPoint(d.paris), hotHou = maxPoint(d.houston), top = maxPoint(d.price);
   var negHours = d.price.filter(function (p) { return p[1] < 0; }).length;
 
   setText('kpi-peak', peak[1].toFixed(1) + ' GW');
   setText('kpi-peak-when', fmtWhen(peak[0], 'America/Chicago') + ' Texas time');
   setText('kpi-hot', hot[1].toFixed(1) + ' °C');
-  setText('kpi-hot-when', fmtWhen(hot[0], 'America/Chicago') + ' Texas time');
-  setText('kpi-low', low[1].toFixed(1) + ' EUR/MWh');
-  setText('kpi-low-when', negHours + ' hours below zero, lowest ' + fmtWhen(low[0], 'Europe/Oslo') + ' Oslo time');
+  setText('kpi-hot-when', fmtWhen(hot[0], 'Europe/Paris') + ' Paris time');
+  setText('kpi-low', Math.round(top[1]) + ' EUR/MWh');
+  setText('kpi-low-when', fmtWhen(top[0], 'Europe/Paris') + ' Paris time, hourly mean');
   setText('kpi-r', 'r = ' + rTexas.toFixed(2));
-  setText('kpi-r-no', 'Southern Norway, temperature vs price: r = ' + rNorway.toFixed(2));
+  setText('kpi-r-no', 'France, Paris temperature vs price: r = ' + rFrance.toFixed(2));
 
   var ctxCommon = 'Hourly data from ' + START_DAY + ' to ' + END_DAY + ', UTC. Temperature from Open-Meteo. ' +
-    'ERCOT demand from the U.S. EIA hourly grid monitor. NO2 prices from hvakosterstrommen.no.';
+    'ERCOT demand from the U.S. EIA hourly grid monitor. French day-ahead prices from Energy-Charts (Fraunhofer ISE, SMARD data), hourly means.';
 
   Highcharts.chart('chart-texas', {
     orbit: {
@@ -650,17 +651,17 @@ function buildPage(d) {
     ]
   });
 
-  Highcharts.chart('chart-norway', {
+  Highcharts.chart('chart-france', {
     orbit: {
-      id: 'uc07-norway',
+      id: 'uc07-france',
       llmContext: { text: [
-        'Southern Norway (bidding zone NO2): hourly Kristiansand air temperature (C) against the day-ahead spot price (EUR/MWh). Pearson r between temperature and price is ' + rNorway.toFixed(2) + ', so heat does not drive price here. ' + negHours + ' hours in the window had a negative price; the lowest was ' + low[1].toFixed(1) + ' EUR/MWh at ' + fmtWhen(low[0], 'Europe/Oslo') + ' Oslo time.',
-        'Norway has almost no air conditioning and is supplied by hydro; midday solar and wind across connected European markets push prices to zero or below on sunny, windy days.',
+        'France: hourly Paris air temperature (C) against the French day-ahead electricity price (EUR/MWh, hourly mean of quarter-hour prices). Hottest hour in Paris in this window: ' + hot[1].toFixed(1) + ' C at ' + fmtWhen(hot[0], 'Europe/Paris') + ' Paris time. Highest hourly price: ' + Math.round(top[1]) + ' EUR/MWh at ' + fmtWhen(top[0], 'Europe/Paris') + ' Paris time. Pearson r between temperature and price is ' + rFrance.toFixed(2) + '. ' + negHours + ' hours had a negative price.',
+        'Air conditioning is far less common in France than in Texas, so heat moves demand less. Instead the price reacts: on the hottest evenings, when solar drops out and cooling demand across Europe peaks, the day-ahead price spikes to several times its normal level.',
         ctxCommon
       ] }
     },
-    title: { text: 'Southern Norway (NO2): temperature and day-ahead spot price' },
-    subtitle: { text: 'Try: open Anomaly detection; the hours below zero light up' },
+    title: { text: 'France: Paris temperature and day-ahead electricity price' },
+    subtitle: { text: 'Try: open Anomaly detection; the evening price spikes on the hottest days light up' },
     xAxis: { type: 'datetime' },
     yAxis: [
       { title: { text: 'Price (EUR/MWh)' }, plotLines: [{ value: 0, width: 1, color: '#918fa3', zIndex: 3 }] },
@@ -669,8 +670,8 @@ function buildPage(d) {
     tooltip: { shared: true },
     plotOptions: { series: { marker: { enabled: false } } },
     series: [
-      { name: 'NO2 day-ahead price', data: d.price, tooltip: { valueSuffix: ' EUR/MWh' }, color: '#544fc5' },
-      { name: 'Kristiansand temperature', data: d.kristiansand, yAxis: 1, tooltip: { valueSuffix: ' °C' }, color: '#fa4b42' }
+      { name: 'France day-ahead price', data: d.price, tooltip: { valueSuffix: ' EUR/MWh' }, color: '#544fc5' },
+      { name: 'Paris temperature', data: d.paris, yAxis: 1, tooltip: { valueSuffix: ' °C' }, color: '#fa4b42' }
     ]
   });
 
@@ -695,6 +696,30 @@ function buildPage(d) {
       data: pairs.map(function (p) { return [p.x, p.y]; }),
       marker: { radius: 2.5 },
       color: '#fe6a35'
+    }]
+  });
+
+  var pairsFr = joinOnTime(d.paris, d.price);
+  Highcharts.chart('chart-scatter-fr', {
+    chart: { type: 'scatter' },
+    orbit: {
+      id: 'uc07-scatter-fr',
+      llmContext: { text: [
+        'Each point is one hour: Paris temperature on x, French day-ahead price on y, ' + pairsFr.length + ' hours. Prices are flat and low across most temperatures and fan out sharply above about 30 C: the hottest hours carry the highest prices.',
+        ctxCommon
+      ] }
+    },
+    title: { text: 'France: price against temperature, hour by hour' },
+    subtitle: { text: 'Try: open Trend Line; compare its slope with the Texas scatter' },
+    xAxis: { title: { text: 'Paris temperature (°C)' } },
+    yAxis: { title: { text: 'Day-ahead price (EUR/MWh)' } },
+    legend: { enabled: false },
+    tooltip: { headerFormat: '', pointFormat: '{point.x:.1f} °C, {point.y:.0f} EUR/MWh' },
+    series: [{
+      name: 'Hourly readings',
+      data: pairsFr.map(function (p) { return [p.x, p.y]; }),
+      marker: { radius: 2.5 },
+      color: '#544fc5'
     }]
   });
 

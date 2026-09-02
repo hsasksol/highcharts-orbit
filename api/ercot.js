@@ -47,10 +47,21 @@ module.exports = async function handler(req, res) {
     return;
   }
   try {
-    const [demand, forecast] = await Promise.all([
-      fetchType(key, 'D', start, end),
-      fetchType(key, 'DF', start, end)
-    ]);
+    /* EIA is slow on long ranges; fetch in 20-day chunks in parallel. */
+    const chunks = [];
+    const d = new Date(start + 'T00:00:00Z'), e = new Date(end + 'T00:00:00Z');
+    while (d <= e && chunks.length < 12) {
+      const c0 = d.toISOString().slice(0, 10);
+      d.setUTCDate(d.getUTCDate() + 19);
+      const c1 = (d <= e ? d : e).toISOString().slice(0, 10);
+      chunks.push([c0, c1]);
+      d.setUTCDate(d.getUTCDate() + 1);
+    }
+    const parts = await Promise.all(chunks.map(function (c) {
+      return Promise.all([fetchType(key, 'D', c[0], c[1]), fetchType(key, 'DF', c[0], c[1])]);
+    }));
+    const demand = [].concat.apply([], parts.map(function (p) { return p[0]; }));
+    const forecast = [].concat.apply([], parts.map(function (p) { return p[1]; }));
     res.setHeader('Cache-Control', 's-maxage=1800, stale-while-revalidate=86400');
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.status(200).json({
