@@ -816,7 +816,7 @@ function buildPage(d) {
     subtitle: { text: 'Try: filter the page to a hot week in the top bar; the evening ridge stays where it is' },
     xAxis: { type: 'datetime', title: { text: 'Date (Paris calendar day)' } },
     yAxis: { categories: Array.apply(null, Array(24)).map(function (_, i) { return (i < 10 ? '0' : '') + i + ':00'; }), title: { text: 'Hour, Paris time' }, reversed: true, min: 0, endOnTick: false, startOnTick: false, tickInterval: 2 },
-    colorAxis: { minColor: '#eef2ff', maxColor: '#3730a3' },
+    colorAxis: { min: -20, max: 250, minColor: '#eef2ff', maxColor: '#3730a3' },
     legend: { align: 'right', layout: 'vertical', verticalAlign: 'middle', symbolHeight: 260 },
     tooltip: { formatter: function () { return (function (p) { return Highcharts.dateFormat('%e %b', p.x) + ' ' + p.series.yAxis.categories[p.y] + ': <b>' + Math.round(p.value); })(this.point || this) + ' EUR/MWh</b>'; } },
     series: [{ name: 'Price (EUR/MWh)', data: cells, colsize: DAY, borderWidth: 0 }]
