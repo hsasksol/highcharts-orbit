@@ -292,7 +292,7 @@
   .industry-chip svg { width:22px; height:22px; display:block; }
   footer { color:var(--muted); font-size:.8125rem; margin-top:24px; line-height:1.5; }
   footer a { color:var(--accent); }
-  .chart { display:flex; align-items:center; justify-content:center; color:var(--muted); }
+  .chart.is-loading { display:flex; align-items:center; justify-content:center; color:var(--muted); }
 </style>
 </head>
 <body>
@@ -429,13 +429,13 @@
       midday price dipped below zero. This window starts 15 July 2026 and ends today.</p>
   </div>
 
-  <div class="panel"><div id="chart-texas" class="chart">Fetching live data…</div></div>
-  <div class="panel"><div id="chart-norway" class="chart">Fetching live data…</div></div>
+  <div class="panel"><div id="chart-texas" class="chart is-loading">Fetching live data…</div></div>
+  <div class="panel"><div id="chart-norway" class="chart is-loading">Fetching live data…</div></div>
   <div class="grid2">
-    <div class="panel"><div id="chart-scatter" class="chart">Fetching live data…</div></div>
-    <div class="panel"><div id="chart-forecast" class="chart">Fetching live data…</div></div>
+    <div class="panel"><div id="chart-scatter" class="chart is-loading">Fetching live data…</div></div>
+    <div class="panel"><div id="chart-forecast" class="chart is-loading">Fetching live data…</div></div>
   </div>
-  <div class="panel"><div id="chart-heat" class="chart">Fetching live data…</div></div>
+  <div class="panel"><div id="chart-heat" class="chart is-loading">Fetching live data…</div></div>
 
   <footer id="footer">Live open data. Temperature: <a href="https://open-meteo.com/">Open-Meteo</a> (CC BY 4.0).
     Texas demand and day-ahead forecast: <a href="https://www.eia.gov/opendata/">U.S. EIA Hourly Electric Grid Monitor</a> (public domain).
@@ -608,6 +608,7 @@ Promise.all([
 });
 
 function buildPage(d) {
+  Array.prototype.forEach.call(document.querySelectorAll('.chart'), function (el) { el.classList.remove('is-loading'); el.textContent = ''; });
   var rTexas = pearson(d.houston, d.demand);
   var rNorway = pearson(d.kristiansand, d.price);
   var peak = maxPoint(d.demand), hot = maxPoint(d.houston), low = minPoint(d.price);
@@ -739,7 +740,7 @@ function buildPage(d) {
     title: { text: 'Texas: the shape of a hot day, demand by hour and date' },
     subtitle: { text: 'Try: filter the page to Last 7d in the top bar; the ridge follows' },
     xAxis: { categories: days, labels: { step: Math.ceil(days.length / 12) }, title: { text: 'Date' } },
-    yAxis: { categories: Array.apply(null, Array(24)).map(function (_, i) { return (i < 10 ? '0' : '') + i + ':00'; }), title: { text: 'Hour, Texas time' }, reversed: true },
+    yAxis: { categories: Array.apply(null, Array(24)).map(function (_, i) { return (i < 10 ? '0' : '') + i + ':00'; }), title: { text: 'Hour, Texas time' }, reversed: true, min: 0, max: 23 },
     colorAxis: { minColor: '#fef3c7', maxColor: '#b91c1c' },
     legend: { align: 'right', layout: 'vertical', verticalAlign: 'middle', symbolHeight: 260 },
     tooltip: { formatter: function () { return (function (p) { return p.series.xAxis.categories[p.x] + ' ' + p.series.yAxis.categories[p.y] + ': <b>' + p.value.toFixed(1); })(this.point || this) + ' GW</b>'; } },
