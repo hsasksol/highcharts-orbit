@@ -449,7 +449,7 @@
     <a href="https://www.eia.gov/opendata/">U.S. EIA Hourly Electric Grid Monitor</a> (public domain).
     Temperature: <a href="https://open-meteo.com/">Open-Meteo</a> (CC BY 4.0).
     Record context: ERCOT via <a href="https://www.houstonchronicle.com/business/energy/article/ercot-power-record-heat-texas-summer-22355892.php">Houston Chronicle</a>.
-    Chart times UTC; the generation mix and every stated hour are Texas time. <span id="fetched-at"></span></footer>
+    The two charts in section 3 and every hour stated in text are Texas time; the charts above them use UTC. <span id="fetched-at"></span></footer>
 </main>
 
 
@@ -792,6 +792,9 @@ function buildMix(m, peak, peakDay) {
 
   Highcharts.chart('chart-mix', {
     chart: { type: 'area' },
+    /* Axis labels in Texas time; the point timestamps stay UTC so page mode
+       still lines this chart up with the rest. */
+    time: { timezone: TZ },
     orbit: {
       id: 'uc07-mix',
       llmContext: { text: [
@@ -802,7 +805,7 @@ function buildMix(m, peak, peakDay) {
     },
     title: { text: 'Texas generation by fuel, ' + dayLabel },
     subtitle: { text: 'Try: open Contribution to rank the sources, or Filter and Focus to isolate solar' },
-    xAxis: { type: 'datetime' },
+    xAxis: { type: 'datetime', title: { text: 'Hour, Texas time' } },
     yAxis: { title: { text: 'Generation (MW)' } },
     tooltip: { shared: true, valueSuffix: ' MW' },
     plotOptions: { area: { stacking: 'normal', marker: { enabled: false }, lineWidth: 1 } },
@@ -811,6 +814,7 @@ function buildMix(m, peak, peakDay) {
 
   Highcharts.chart('chart-bat', {
     chart: { type: 'column' },
+    time: { timezone: TZ },
     orbit: {
       id: 'uc07-bat',
       llmContext: { text: [
@@ -822,7 +826,7 @@ function buildMix(m, peak, peakDay) {
     },
     title: { text: 'Batteries on the record day: charge at noon, pay back at night' },
     subtitle: { text: 'Try: open Summary for the totals, or Annotate to mark the crossover' },
-    xAxis: { type: 'datetime' },
+    xAxis: { type: 'datetime', title: { text: 'Hour, Texas time' } },
     yAxis: { title: { text: 'Net battery flow (MW)' }, plotLines: [{ value: 0, width: 1, color: '#918fa3', zIndex: 3 }] },
     legend: { enabled: false },
     tooltip: { valueSuffix: ' MW' },
