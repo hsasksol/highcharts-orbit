@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Orbit demo 07: Heat is the new peak</title>
+<title>Orbit demo 07: The hottest hour of the year</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -318,12 +318,12 @@
   </div>
 </header>
 <main>
-  <h1>Heat is the new peak</h1>
-  <p class="setup">On both sides of the Atlantic, the hottest hour of the summer is now the hour the grid
-    works hardest. Houston heat pushed Texas to an all-time demand record in July; Paris heat lifted
-    French demand almost as reliably. The twist is the price: in France it did not follow the
-    temperature at all. Every series on this page is fetched live from open APIs when you open it.
-    Use the Orbit toolbar on each chart, and the page bar at the top, to test each claim yourself.</p>
+  <h1>The hottest hour of the year</h1>
+  <p class="setup">Texas has more people, more data centres and more air conditioning every summer, and
+    one grid to carry all of it. This page follows a single question through live data: what does heat
+    actually do to that grid, and what kept the lights on when it peaked? Every series is fetched from
+    open APIs when you open the page. Use the Orbit toolbar on each chart, and the page bar at the top,
+    to check each claim for yourself.</p>
 
   <div id="orbit-note" hidden>The Orbit toolbar did not load. Serve this page from a domain
     on the Orbit installation's referrer allowlist; opened from a local file the charts
@@ -343,7 +343,7 @@
         <div class="journey-copy">
           <div class="journey-step">Step 1 of 6</div>
           <h3 class="journey-tool">Correlations</h3>
-          <p class="journey-what">Run it on the Texas chart, then on the France chart: temperature and demand move together strongly in both. Then run it on the France price chart and the link is gone.</p>
+          <p class="journey-what">Put a number on the claim that heat drives demand. Orbit reports the coefficient between Houston temperature and ERCOT demand across every hour on the chart.</p>
           <p class="journey-how"><b>How:</b> Open Analyze in the chart toolbar, then Relationships, and run Correlations.</p>
         </div>
         <figure class="journey-media"><img src="shots/menu-analyze-relationships.png" alt="Analyze menu, Relationships, Correlations"></figure>
@@ -352,7 +352,7 @@
         <div class="journey-copy">
           <div class="journey-step">Step 2 of 6</div>
           <h3 class="journey-tool">Anomaly detection</h3>
-          <p class="journey-what">On the Texas chart the record afternoons of 21 and 22 July stand out without anyone marking them. On the France price chart it is the evening spikes.</p>
+          <p class="journey-what">Nothing on this page marks the record. Let Orbit find it: the July afternoons come back as the outliers in the demand series.</p>
           <p class="journey-how"><b>How:</b> Open Analyze in the chart toolbar, then Quality, and run Anomaly detection.</p>
         </div>
         <figure class="journey-media"><img src="shots/menu-analyze-quality.png" alt="Analyze menu, Quality, Anomaly Detection"></figure>
@@ -361,7 +361,7 @@
         <div class="journey-copy">
           <div class="journey-step">Step 3 of 6</div>
           <h3 class="journey-tool">Trend line</h3>
-          <p class="journey-what">Fit a line to each scatter. Texas and France both slope upward with temperature; the France price scatter is flat, whatever the temperature.</p>
+          <p class="journey-what">Fit a line to the scatter. Demand is flat across mild hours and turns sharply upward past about 30 C: that bend is air conditioning switching on across the state.</p>
           <p class="journey-how"><b>How:</b> Open Analyze in the chart toolbar, then Trends, and choose Trend Line.</p>
         </div>
         <figure class="journey-media"><img src="shots/menu-analyze-trends.png" alt="Analyze menu, Trends, Trend Line"></figure>
@@ -370,7 +370,7 @@
         <div class="journey-copy">
           <div class="journey-step">Step 4 of 6</div>
           <h3 class="journey-tool">Derived series</h3>
-          <p class="journey-what">On the forecast chart, compute actual minus day-ahead forecast. The biggest misses fall on the hottest afternoons.</p>
+          <p class="journey-what">Subtract the day-ahead forecast from the actual demand and you get the forecast error as its own series. The biggest misses land on the hottest afternoons.</p>
           <p class="journey-how"><b>How:</b> Open Transform in the chart toolbar, then Derived Series, and subtract the forecast from the actual.</p>
         </div>
         <figure class="journey-media"><img src="shots/menu-transform.png" alt="Transform menu, Derived Series"></figure>
@@ -378,17 +378,17 @@
       <div class="journey-slide">
         <div class="journey-copy">
           <div class="journey-step">Step 5 of 6</div>
-          <h3 class="journey-tool">Filters and Compare</h3>
-          <p class="journey-what">Filter the page to the record week and every time-based chart follows, the heatmap included; the scatters keep their full clouds. Compare puts a hot week and a cool week side by side.</p>
-          <p class="journey-how"><b>How:</b> Open Filters or Compare in the top bar; the date presets and ranges apply to the whole page.</p>
+          <h3 class="journey-tool">Contribution</h3>
+          <p class="journey-what">On the generation mix, Contribution ranks what actually supplied the record day, and Filter and Focus lets you isolate solar or batteries against the rest.</p>
+          <p class="journey-how"><b>How:</b> Open Analyze, then Relationships, then Contribution; or Transform, then Filter and Focus.</p>
         </div>
-        <figure class="journey-media"><img src="shots/topbar-compare.png" alt="The Orbit page top bar with the Compare panel open"></figure>
+        <figure class="journey-media"><img src="shots/menu-analyze-contribution.png" alt="Analyze menu, Relationships, Contribution"></figure>
       </div>
       <div class="journey-slide">
         <div class="journey-copy">
           <div class="journey-step">Step 6 of 6</div>
           <h3 class="journey-tool">Insights and Narrator</h3>
-          <p class="journey-what">Ask Insights on any chart: the context behind it carries the record date, the sources and the numbers on this page. Narrator turns it into copy in four tones.</p>
+          <p class="journey-what">Ask Insights on any chart. The context behind each one carries the record hour, the numbers and the sources, so the answer is about this grid rather than generic. Narrator turns it into copy in four tones.</p>
           <p class="journey-how"><b>How:</b> Open AI in the chart toolbar and choose Insights, or Narrator.</p>
         </div>
         <figure class="journey-media"><img src="shots/menu-ai.png" alt="AI menu, Insights and Narrator"></figure>
@@ -401,59 +401,57 @@
 
   <div class="kpis">
     <div class="kpi" data-orbit-context="KPI">
-      <div class="label">Texas: extra demand per degree</div>
-      <div class="value bad" id="kpi-tx-slope">…</div>
-      <div class="delta" id="kpi-tx-slope-note">Fetching EIA and Open-Meteo data</div>
-    </div>
-    <div class="kpi" data-orbit-context="KPI">
-      <div class="label">France: extra demand per degree</div>
-      <div class="value bad" id="kpi-fr-slope">…</div>
-      <div class="delta" id="kpi-fr-slope-note">Fetching Energy-Charts data</div>
-    </div>
-    <div class="kpi" data-orbit-context="KPI">
-      <div class="label">ERCOT peak demand in this window</div>
+      <div class="label">Peak demand in this window</div>
       <div class="value bad" id="kpi-peak">…</div>
       <div class="delta" id="kpi-peak-when">Fetching EIA data</div>
     </div>
     <div class="kpi" data-orbit-context="KPI">
-      <div class="label">France: price vs temperature</div>
-      <div class="value" id="kpi-r-price">…</div>
-      <div class="delta" id="kpi-r-price-note">Pearson r, hourly</div>
+      <div class="label">Extra demand per degree</div>
+      <div class="value bad" id="kpi-slope">…</div>
+      <div class="delta" id="kpi-slope-note">Fetching Open-Meteo data</div>
+    </div>
+    <div class="kpi" data-orbit-context="KPI">
+      <div class="label">Solar at the peak hour</div>
+      <div class="value" id="kpi-solar">…</div>
+      <div class="delta" id="kpi-solar-note">Fetching generation mix</div>
+    </div>
+    <div class="kpi" data-orbit-context="KPI">
+      <div class="label">Batteries at the evening peak</div>
+      <div class="value" id="kpi-bat">…</div>
+      <div class="delta" id="kpi-bat-note">Fetching generation mix</div>
     </div>
   </div>
 
   <div class="panel" data-orbit-context="Background">
-    <p class="note"><strong>What happened:</strong> On 22 July 2026 ERCOT, the Texas grid operator, reported
-      an all-time demand record of 91,308 MW at 5 pm local time, beating a record set the day before. EIA's
-      hourly series shows 91,075 MWh for that hour. In Europe, successive heat waves in June and July pushed
-      Paris past 40 C and lifted French demand with it. But French prices did not track the heat: midday
-      solar absorbs the daytime peak, and the expensive hours come in the evening whatever the temperature.
-      This window starts 18 June 2026 and ends today.</p>
+    <p class="note"><strong>Background:</strong> ERCOT runs the grid for about 90 percent of Texas, on its own
+      island with few connections to its neighbours. On 22 July 2026 it reported an all-time demand record of
+      91,308 MW at 5 pm local time, one day after breaking the previous record. The EIA hourly series used
+      here shows 91,075 MWh for that hour. This page covers 18 June 2026 to today, hour by hour, and
+      recalculates every number below from the data each time it loads.</p>
   </div>
 
-  <h2 class="section">1. Heat drives demand, on both continents</h2>
-  <div class="panel"><div id="chart-texas" class="chart is-loading">Fetching live data…</div></div>
-  <div class="panel"><div id="chart-france" class="chart is-loading">Fetching live data…</div></div>
+  <h2 class="section">1. Heat sets the peak</h2>
+  <div class="panel"><div id="chart-demand" class="chart is-loading">Fetching live data…</div></div>
   <div class="grid2">
     <div class="panel"><div id="chart-scatter" class="chart is-loading">Fetching live data…</div></div>
-    <div class="panel"><div id="chart-scatter-fr" class="chart is-loading">Fetching live data…</div></div>
+    <div class="panel"><div id="chart-heat" class="chart is-loading">Fetching live data…</div></div>
   </div>
 
   <h2 class="section">2. The record, and the forecast that missed it</h2>
   <div class="panel"><div id="chart-forecast" class="chart is-loading">Fetching live data…</div></div>
 
-  <h2 class="section">3. The twist: in France, the price ignores the thermometer</h2>
-  <div class="grid2">
-    <div class="panel"><div id="chart-scatter-price" class="chart is-loading">Fetching live data…</div></div>
-    <div class="panel"><div id="chart-heat" class="chart is-loading">Fetching live data…</div></div>
-  </div>
+  <h2 class="section" id="act3">3. What kept the lights on</h2>
+  <p class="note" id="act3-note" style="margin-bottom:14px">Fetching the generation mix for the peak day…</p>
+  <div class="panel"><div id="chart-mix" class="chart is-loading">Fetching live data…</div></div>
+  <div class="panel"><div id="chart-bat" class="chart is-loading">Fetching live data…</div></div>
 
-  <footer id="footer">Live open data. Temperature: <a href="https://open-meteo.com/">Open-Meteo</a> (CC BY 4.0).
-    Texas demand and day-ahead forecast: <a href="https://www.eia.gov/opendata/">U.S. EIA Hourly Electric Grid Monitor</a> (public domain).
-    French load and day-ahead price: <a href="https://api.energy-charts.info/">Energy-Charts, Fraunhofer ISE</a> (load from ENTSO-E, price from Bundesnetzagentur | SMARD.de, CC BY 4.0), hourly means of quarter-hour values.
-    Record context: ERCOT via <a href="https://www.houstonchronicle.com/business/energy/article/ercot-power-record-heat-texas-summer-22355892.php">Houston Chronicle</a>; European solar and evening prices via <a href="https://ember-energy.org/latest-insights/solar-helps-europes-grid-withstand-extreme-heat/">Ember</a>.
-    Chart times UTC; KPI times local. <span id="fetched-at"></span></footer>
+  <footer id="footer">Live open data. Demand, day-ahead forecast and generation by fuel type:
+    <a href="https://www.eia.gov/opendata/">U.S. EIA Hourly Electric Grid Monitor</a> (public domain).
+    Temperature: <a href="https://open-meteo.com/">Open-Meteo</a> (CC BY 4.0).
+    Record context: ERCOT via <a href="https://www.houstonchronicle.com/business/energy/article/ercot-power-record-heat-texas-summer-22355892.php">Houston Chronicle</a>.
+    Chart times UTC; the generation mix and every stated hour are Texas time. <span id="fetched-at"></span></footer>
 </main>
+
 
 <script src="https://code.highcharts.com/highcharts.js"></script>
 <script src="https://code.highcharts.com/highcharts-more.js"></script>
@@ -517,12 +515,14 @@ Highcharts.setOptions({
   subtitle: { align: 'left' }
 });
 
-/* Live data. Window: from 18 June 2026 (the first European heat wave) to today,
-   hourly, all timestamps UTC. Every point carries an explicit [x, y] so the
-   page-mode date filter works, and the last point is today so the presets
-   (Today, Last 7d, Last 30d) select real data. */
+/* Live data, Texas only. Window: 18 June 2026 to today, hourly, timestamps UTC.
+   Every point carries an explicit [x, y] so the page-mode date filter works, and
+   the last point is today so the presets (Today, Last 7d, Last 30d) select real
+   data. The generation mix is fetched in a second pass, for whichever Texas
+   calendar day turns out to hold the peak hour. */
 var HOUR = 3600 * 1000;
 var DAY = 24 * HOUR;
+var TZ = 'America/Chicago';
 var TODAY = (function () {
   var d = new Date();
   return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
@@ -537,11 +537,16 @@ var END_DAY = isoDay(TODAY);
 var SOURCES = {
   weather: 'https://api.open-meteo.com/v1/forecast',
   ercot: '/api/ercot',
-  france: '/api/france'
+  fuelmix: '/api/fuelmix'
 };
-var PLACES = {
-  houston: { lat: 29.76, lon: -95.37, name: 'Houston', tz: 'America/Chicago' },
-  paris: { lat: 48.86, lon: 2.35, name: 'Paris', tz: 'Europe/Paris' }
+var HOUSTON = { lat: 29.76, lon: -95.37, name: 'Houston' };
+
+/* Fuel colours: solar and batteries lead, thermal recedes. Checked for 3:1
+   contrast on both the light and the dark card background. */
+var FUEL_ORDER = ['NUC', 'COL', 'NG', 'WND', 'SUN', 'BAT'];
+var FUEL_COLOR = {
+  NUC: '#6b8abc', COL: '#5e5c70', NG: '#918fa3',
+  WND: '#2ee0ca', SUN: '#f9c80e', BAT: '#d568fb', WAT: '#2caffe', OTH: '#acabba'
 };
 
 function fetchJSON(url) {
@@ -565,27 +570,20 @@ function fetchTemperature(p) {
 }
 
 /* Small helpers */
-function pearson(a, b) {
-  var map = {}, i, n = 0, sx = 0, sy = 0, sxx = 0, syy = 0, sxy = 0;
-  for (i = 0; i < b.length; i++) { map[b[i][0]] = b[i][1]; }
-  for (i = 0; i < a.length; i++) {
-    var y = map[a[i][0]];
-    if (y === undefined) { continue; }
-    var x = a[i][1];
-    n++; sx += x; sy += y; sxx += x * x; syy += y * y; sxy += x * y;
-  }
-  if (n < 3) { return NaN; }
-  var cov = sxy - sx * sy / n;
-  var vx = sxx - sx * sx / n, vy = syy - sy * sy / n;
-  return cov / Math.sqrt(vx * vy);
-}
 function maxPoint(a) { return a.reduce(function (m, p) { return p[1] > m[1] ? p : m; }, a[0]); }
+function minPoint(a) { return a.reduce(function (m, p) { return p[1] < m[1] ? p : m; }, a[0]); }
+var fmtDayTZ = new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit' });
+var fmtHourTZ = new Intl.DateTimeFormat('en-GB', { timeZone: TZ, hour: '2-digit', hour12: false });
+function localDay(ms) { return fmtDayTZ.format(new Date(ms)); }
+function localHour(ms) { return parseInt(fmtHourTZ.format(new Date(ms)), 10) % 24; }
 function fmtWhen(ms, tz) {
   return new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: tz || 'UTC' }).format(new Date(ms));
 }
+function fmtDate(ms, tz) {
+  return new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', timeZone: tz || 'UTC' }).format(new Date(ms));
+}
 function setText(id, s) { var el = document.getElementById(id); if (el) { el.textContent = s; } }
 function joinOnTime(a, b) {
-  /* [x(a.y), y(b.y)] pairs for matching timestamps, for the scatters */
   var map = {}, out = [], i;
   for (i = 0; i < b.length; i++) { map[b[i][0]] = b[i][1]; }
   for (i = 0; i < a.length; i++) {
@@ -593,25 +591,24 @@ function joinOnTime(a, b) {
   }
   return out;
 }
-/* Daily maximum per local calendar day, for the per-degree KPI */
-function dailyMax(series, tz) {
-  var fmt = new Intl.DateTimeFormat('en-CA', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit' });
+/* Daily maximum per Texas calendar day, for the per-degree figure */
+function dailyMax(series) {
   var out = {}, count = {};
   series.forEach(function (p) {
-    var k = fmt.format(new Date(p[0]));
+    var k = localDay(p[0]);
     out[k] = out[k] === undefined ? p[1] : Math.max(out[k], p[1]);
     count[k] = (count[k] || 0) + 1;
   });
   Object.keys(count).forEach(function (k) { if (count[k] < 20) { delete out[k]; } });
   return out;
 }
-/* Slope of daily peak (y) on daily maximum temperature (x), least squares */
-function perDegree(temp, load, tz) {
-  var tx = dailyMax(temp, tz), ly = dailyMax(load, tz), xs = [], ys = [];
+/* Least-squares slope of daily peak demand on daily maximum temperature */
+function perDegree(temp, load) {
+  var tx = dailyMax(temp), ly = dailyMax(load), xs = [], ys = [];
   Object.keys(tx).forEach(function (k) { if (ly[k] !== undefined) { xs.push(tx[k]); ys.push(ly[k]); } });
-  var n = xs.length, mx = xs.reduce(function (a, b) { return a + b; }, 0) / n, my = ys.reduce(function (a, b) { return a + b; }, 0) / n;
-  var num = 0, den = 0;
-  for (var i = 0; i < n; i++) { num += (xs[i] - mx) * (ys[i] - my); den += (xs[i] - mx) * (xs[i] - mx); }
+  var n = xs.length, i, mx = 0, my = 0, num = 0, den = 0;
+  for (i = 0; i < n; i++) { mx += xs[i] / n; my += ys[i] / n; }
+  for (i = 0; i < n; i++) { num += (xs[i] - mx) * (ys[i] - my); den += (xs[i] - mx) * (xs[i] - mx); }
   return { slope: num / den, days: n, meanPeak: my };
 }
 function showDataNote(msg) {
@@ -621,62 +618,64 @@ function showDataNote(msg) {
 }
 
 Promise.all([
-  fetchTemperature(PLACES.houston),
-  fetchTemperature(PLACES.paris),
-  fetchJSON(SOURCES.ercot + '?start=' + START_DAY + '&end=' + END_DAY),
-  fetchJSON(SOURCES.france + '?start=' + START_DAY + '&end=' + END_DAY)
+  fetchTemperature(HOUSTON),
+  fetchJSON(SOURCES.ercot + '?start=' + START_DAY + '&end=' + END_DAY)
 ]).then(function (r) {
   var toGW = function (p) { return [p[0], Math.round(p[1] / 100) / 10]; };
-  var d = {
-    houston: r[0],
-    paris: r[1],
-    demand: r[2].demand.map(toGW),
-    forecast: r[2].forecast.map(toGW),
-    load: r[3].load.map(toGW).filter(function (p) { return p[0] >= WINDOW_START; }),
-    price: r[3].price.filter(function (p) { return p[0] >= WINDOW_START; })
-  };
-  if (!d.houston.length || !d.demand.length || !d.load.length || !d.price.length) { throw new Error('one of the sources returned no rows'); }
+  var d = { houston: r[0], demand: r[1].demand.map(toGW), forecast: r[1].forecast.map(toGW) };
+  if (!d.houston.length || !d.demand.length) { throw new Error('one of the sources returned no rows'); }
   buildPage(d);
   setText('fetched-at', 'Fetched ' + fmtWhen(Date.now()) + ' UTC.');
+
+  /* Second pass: the generation mix for the Texas calendar day of the peak.
+     The day runs from 05:00 UTC to 05:00 UTC, so both UTC dates are requested. */
+  var peak = maxPoint(d.demand);
+  var peakDay = localDay(peak[0]);
+  var from = isoDay(Date.parse(peakDay + 'T00:00:00Z') - DAY);
+  var to = isoDay(Date.parse(peakDay + 'T00:00:00Z') + DAY);
+  return fetchJSON(SOURCES.fuelmix + '?start=' + from + '&end=' + to).then(function (m) {
+    buildMix(m, peak, peakDay);
+  });
 }).catch(function (e) {
   showDataNote('<strong>Live data did not load:</strong> ' + e.message + '. The APIs behind this page are open but not guaranteed; reload in a minute.');
-  Array.prototype.forEach.call(document.querySelectorAll('.chart'), function (el) { el.textContent = 'No data'; });
+  Array.prototype.forEach.call(document.querySelectorAll('.chart.is-loading'), function (el) { el.textContent = 'No data'; });
 });
 
+var ctxCommon = '';
+
 function buildPage(d) {
-  Array.prototype.forEach.call(document.querySelectorAll('.chart'), function (el) { el.classList.remove('is-loading'); el.textContent = ''; });
+  ['chart-demand', 'chart-scatter', 'chart-heat', 'chart-forecast'].forEach(function (id) {
+    var el = document.getElementById(id);
+    el.classList.remove('is-loading');
+    el.textContent = '';
+  });
 
-  var rTexas = pearson(d.houston, d.demand);
-  var rFrance = pearson(d.paris, d.load);
-  var rPrice = pearson(d.paris, d.price);
-  var peak = maxPoint(d.demand), hotHou = maxPoint(d.houston), hotPar = maxPoint(d.paris), frPeak = maxPoint(d.load), topPrice = maxPoint(d.price);
-  var slTx = perDegree(d.houston, d.demand, PLACES.houston.tz);
-  var slFr = perDegree(d.paris, d.load, PLACES.paris.tz);
+  var peak = maxPoint(d.demand), hot = maxPoint(d.houston), sl = perDegree(d.houston, d.demand);
+  var slopeMW = sl.slope * 1000;
 
-  setText('kpi-tx-slope', (slTx.slope * 1000).toFixed(0) + ' MW');
-  setText('kpi-tx-slope-note', 'per °C of daily high, ' + (100 * slTx.slope / slTx.meanPeak).toFixed(1) + '% of a typical peak, ' + slTx.days + ' days');
-  setText('kpi-fr-slope', (slFr.slope * 1000).toFixed(0) + ' MW');
-  setText('kpi-fr-slope-note', 'per °C of daily high, ' + (100 * slFr.slope / slFr.meanPeak).toFixed(1) + '% of a typical peak, ' + slFr.days + ' days');
   setText('kpi-peak', peak[1].toFixed(1) + ' GW');
-  setText('kpi-peak-when', fmtWhen(peak[0], PLACES.houston.tz) + ' Texas time, Houston ' + hotHou[1].toFixed(1) + ' °C at its hottest');
-  setText('kpi-r-price', 'r = ' + rPrice.toFixed(2));
-  setText('kpi-r-price-note', 'Demand vs temperature: Texas r = ' + rTexas.toFixed(2) + ', France r = ' + rFrance.toFixed(2));
+  setText('kpi-peak-when', fmtWhen(peak[0], TZ) + ' Texas time, the hour Houston hit ' + (function () {
+    var m = {}; d.houston.forEach(function (p) { m[p[0]] = p[1]; });
+    return m[peak[0]] !== undefined ? m[peak[0]].toFixed(1) + ' °C' : 'its afternoon high';
+  })());
+  setText('kpi-slope', Math.round(slopeMW) + ' MW');
+  setText('kpi-slope-note', 'per °C of daily high, about ' + (100 * sl.slope / sl.meanPeak).toFixed(1) + '% of a typical peak, over ' + sl.days + ' days');
 
-  var ctxCommon = 'Hourly data from ' + START_DAY + ' to ' + END_DAY + ', UTC. Temperature from Open-Meteo. ' +
-    'ERCOT demand and day-ahead forecast from the U.S. EIA hourly grid monitor. French load (ENTSO-E) and day-ahead price (SMARD) via Energy-Charts, hourly means. ' +
-    'Page findings: Texas demand vs Houston temperature r = ' + rTexas.toFixed(2) + ', about ' + (slTx.slope * 1000).toFixed(0) + ' MW per degree of daily high; France load vs Paris temperature r = ' + rFrance.toFixed(2) + ', about ' + (slFr.slope * 1000).toFixed(0) + ' MW per degree; France price vs Paris temperature r = ' + rPrice.toFixed(2) + '.';
+  ctxCommon = 'Hourly data for ERCOT (Texas) from ' + START_DAY + ' to ' + END_DAY + '. Demand, day-ahead demand forecast and generation by fuel type from the U.S. EIA Hourly Electric Grid Monitor; Houston temperature from Open-Meteo. ' +
+    'Chart timestamps are UTC; hours quoted in text are Texas time (UTC-5). Peak demand in this window: ' + peak[1].toFixed(1) + ' GW at ' + fmtWhen(peak[0], TZ) + ' Texas time. ' +
+    'Houston reached ' + hot[1].toFixed(1) + ' C at ' + fmtWhen(hot[0], TZ) + '. Daily peak demand rises about ' + Math.round(slopeMW) + ' MW per degree C of daily high temperature, measured over ' + sl.days + ' days.';
 
-  Highcharts.chart('chart-texas', {
+  Highcharts.chart('chart-demand', {
     orbit: {
-      id: 'uc07-texas',
+      id: 'uc07-demand',
       llmContext: { text: [
-        'Texas: hourly Houston air temperature (C) against ERCOT electricity demand (GW). Peak demand in this window is ' + peak[1].toFixed(1) + ' GW at ' + fmtWhen(peak[0], PLACES.houston.tz) + ' Texas time; Houston reached ' + hotHou[1].toFixed(1) + ' C at ' + fmtWhen(hotHou[0], PLACES.houston.tz) + ' Texas time.',
-        'ERCOT reported an all-time record of 91,308 MW at 5 pm local time on 22 July 2026, the day after the previous record. Air conditioning is the driver: demand rises steeply once Houston passes about 30 C.',
+        'The headline chart: hourly Houston air temperature (C) against ERCOT electricity demand (GW). The two series rise and fall together on a daily cycle, and the highest demand hours sit on the hottest afternoons.',
+        'ERCOT reported an all-time record of 91,308 MW at 5 pm local time on 22 July 2026, one day after breaking the previous record. Air conditioning is the mechanism: demand climbs steeply once Houston passes about 30 C.',
         ctxCommon
       ] }
     },
-    title: { text: 'Texas: Houston temperature and ERCOT electricity demand' },
-    subtitle: { text: 'Try: open Correlations, then Anomaly detection on the demand series' },
+    title: { text: 'Houston temperature and Texas electricity demand' },
+    subtitle: { text: 'Try: open Correlations for the number, then Anomaly detection to find the record' },
     xAxis: { type: 'datetime' },
     yAxis: [
       { title: { text: 'Demand (GW)' } },
@@ -690,77 +689,60 @@ function buildPage(d) {
     ]
   });
 
-  Highcharts.chart('chart-france', {
-    orbit: {
-      id: 'uc07-france',
-      llmContext: { text: [
-        'France: hourly Paris air temperature (C) against French electricity load (GW, ENTSO-E via Energy-Charts). Peak load in this window is ' + frPeak[1].toFixed(1) + ' GW at ' + fmtWhen(frPeak[0], PLACES.paris.tz) + ' Paris time; Paris reached ' + hotPar[1].toFixed(1) + ' C at ' + fmtWhen(hotPar[0], PLACES.paris.tz) + ' Paris time.',
-        'France has far less air conditioning than Texas and a summer load about half the size, yet demand still tracks the heat: on the hottest days the daily peak runs roughly a tenth above cool days.',
-        ctxCommon
-      ] }
-    },
-    title: { text: 'France: Paris temperature and national electricity load' },
-    subtitle: { text: 'Try: open Correlations and compare the number with the Texas chart' },
-    xAxis: { type: 'datetime' },
-    yAxis: [
-      { title: { text: 'Load (GW)' } },
-      { title: { text: 'Temperature (°C)' }, opposite: true }
-    ],
-    tooltip: { shared: true },
-    plotOptions: { series: { marker: { enabled: false } } },
-    series: [
-      { name: 'France load', data: d.load, tooltip: { valueSuffix: ' GW' }, color: '#00e272' },
-      { name: 'Paris temperature', data: d.paris, yAxis: 1, tooltip: { valueSuffix: ' °C' }, color: '#fa4b42' }
-    ]
-  });
-
-  var pairsTx = joinOnTime(d.houston, d.demand);
+  var pairs = joinOnTime(d.houston, d.demand);
   Highcharts.chart('chart-scatter', {
     chart: { type: 'scatter' },
     orbit: {
       id: 'uc07-scatter',
       llmContext: { text: [
-        'Each point is one hour: Houston temperature on x, ERCOT demand on y, ' + pairsTx.length + ' hours. The cloud is flat and wide below about 25 C and turns sharply upward above 30 C, the air-conditioning response.',
+        'Each point is one hour: Houston temperature on x, ERCOT demand on y, ' + pairs.length + ' hours. The cloud is flat and wide across mild hours and bends sharply upward above about 30 C. That bend is the air-conditioning response, and it is why a few degrees decide the annual peak.',
         ctxCommon
       ] }
     },
-    title: { text: 'Texas: demand against temperature, hour by hour' },
+    title: { text: 'Demand against temperature, hour by hour' },
     subtitle: { text: 'Try: open Trend Line; the slope steepens above about 30 °C' },
     xAxis: { title: { text: 'Houston temperature (°C)' } },
     yAxis: { title: { text: 'ERCOT demand (GW)' } },
     legend: { enabled: false },
     tooltip: { headerFormat: '', pointFormat: '{point.x:.1f} °C, {point.y:.1f} GW' },
-    series: [{ name: 'Hourly readings', data: pairsTx, marker: { radius: 2.5 }, color: '#fe6a35' }]
+    series: [{ name: 'Hourly readings', data: pairs, marker: { radius: 2.5 }, color: '#fe6a35' }]
   });
 
-  var pairsFr = joinOnTime(d.paris, d.load);
-  Highcharts.chart('chart-scatter-fr', {
-    chart: { type: 'scatter' },
+  /* Heatmap: demand by hour of day (Texas time) and date. x is the Texas
+     calendar day as a UTC midnight timestamp, so the chart shares the page's
+     datetime axis and follows the page-mode date filter. */
+  var cells = [];
+  d.demand.forEach(function (p) {
+    cells.push([Date.parse(localDay(p[0]) + 'T00:00:00Z'), localHour(p[0]), p[1]]);
+  });
+  Highcharts.chart('chart-heat', {
+    chart: { type: 'heatmap' },
     orbit: {
-      id: 'uc07-scatter-fr',
+      id: 'uc07-heat',
       llmContext: { text: [
-        'Each point is one hour: Paris temperature on x, French load on y, ' + pairsFr.length + ' hours. The cloud slopes upward across the whole range; the daily cycle of both series shows as a broad band.',
+        'ERCOT demand in GW by hour of day (Texas time, rows) and date (columns). The dark ridge in the late afternoon and early evening is the daily air-conditioning peak; it is widest and darkest through the July heat wave and fades on cooler days.',
         ctxCommon
       ] }
     },
-    title: { text: 'France: load against temperature, hour by hour' },
-    subtitle: { text: 'Try: open Trend Line and compare its slope with the Texas scatter' },
-    xAxis: { title: { text: 'Paris temperature (°C)' } },
-    yAxis: { title: { text: 'France load (GW)' } },
-    legend: { enabled: false },
-    tooltip: { headerFormat: '', pointFormat: '{point.x:.1f} °C, {point.y:.1f} GW' },
-    series: [{ name: 'Hourly readings', data: pairsFr, marker: { radius: 2.5 }, color: '#00e272' }]
+    title: { text: 'The shape of a hot day' },
+    subtitle: { text: 'Try: filter the page to the record week; the ridge follows' },
+    xAxis: { type: 'datetime', title: { text: 'Date (Texas calendar day)' } },
+    yAxis: { categories: Array.apply(null, Array(24)).map(function (_, i) { return (i < 10 ? '0' : '') + i + ':00'; }), title: { text: 'Hour, Texas time' }, reversed: true, min: 0, endOnTick: false, startOnTick: false, tickInterval: 3 },
+    colorAxis: { minColor: '#fef3c7', maxColor: '#b91c1c' },
+    legend: { align: 'right', layout: 'vertical', verticalAlign: 'middle', symbolHeight: 200 },
+    tooltip: { formatter: function () { return (function (p) { return Highcharts.dateFormat('%e %b', p.x) + ' ' + p.series.yAxis.categories[p.y] + ': <b>' + p.value.toFixed(1); })(this.point || this) + ' GW</b>'; } },
+    series: [{ name: 'Demand (GW)', data: cells, colsize: DAY, borderWidth: 0 }]
   });
 
   Highcharts.chart('chart-forecast', {
     orbit: {
       id: 'uc07-forecast',
       llmContext: { text: [
-        'ERCOT actual hourly demand against ERCOT\'s own day-ahead demand forecast, both in GW from the EIA grid monitor. The gap between them is the forecast error; the largest misses fall on the hottest afternoons.',
+        'ERCOT actual hourly demand against ERCOT\'s own day-ahead demand forecast, both in GW from the EIA grid monitor. The gap between the two is the forecast error. Subtracting one from the other with Derived Series shows the misses clustering on the hottest afternoons, which is when an error costs the most.',
         ctxCommon
       ] }
     },
-    title: { text: 'Texas: did the day-ahead forecast see the heat coming?' },
+    title: { text: 'Did the day-ahead forecast see the heat coming?' },
     subtitle: { text: 'Try: open Derived Series and compute actual minus forecast' },
     xAxis: { type: 'datetime' },
     yAxis: { title: { text: 'Demand (GW)' } },
@@ -771,55 +753,87 @@ function buildPage(d) {
       { name: 'Day-ahead forecast', data: d.forecast, dashStyle: 'ShortDash', color: '#918fa3' }
     ]
   });
+}
 
-  var pairsPrice = joinOnTime(d.paris, d.price);
-  Highcharts.chart('chart-scatter-price', {
-    chart: { type: 'scatter' },
+function buildMix(m, peak, peakDay) {
+  ['chart-mix', 'chart-bat'].forEach(function (id) {
+    var el = document.getElementById(id);
+    el.classList.remove('is-loading');
+    el.textContent = '';
+  });
+
+  /* Keep only the Texas calendar day that holds the peak hour */
+  function onDay(arr) { return (arr || []).filter(function (p) { return localDay(p[0]) === peakDay; }); }
+  var series = FUEL_ORDER.map(function (f) {
+    return { key: f, name: m.names[f] || f, data: onDay(m.series[f]) };
+  }).filter(function (s) { return s.data.length; });
+
+  var sun = (series.filter(function (s) { return s.key === 'SUN'; })[0] || { data: [] }).data;
+  var bat = (series.filter(function (s) { return s.key === 'BAT'; })[0] || { data: [] }).data;
+  var sunAtPeak = 0;
+  sun.forEach(function (p) { if (p[0] === peak[0]) { sunAtPeak = p[1]; } });
+  var sunMax = sun.length ? maxPoint(sun) : null;
+  var batMax = bat.length ? maxPoint(bat) : null;
+  var batMin = bat.length ? minPoint(bat) : null;
+  var dayLabel = fmtDate(Date.parse(peakDay + 'T12:00:00Z'), 'UTC');
+
+  setText('kpi-solar', (sunAtPeak / 1000).toFixed(1) + ' GW');
+  setText('kpi-solar-note', Math.round(100 * sunAtPeak / (peak[1] * 1000)) + '% of demand in that hour, peaking at ' +
+    (sunMax ? (sunMax[1] / 1000).toFixed(1) + ' GW at ' + fmtWhen(sunMax[0], TZ) : 'midday'));
+  setText('kpi-bat', batMax ? (batMax[1] / 1000).toFixed(1) + ' GW' : 'n/a');
+  setText('kpi-bat-note', batMax && batMin ? 'discharged at ' + fmtWhen(batMax[0], TZ) + ', after charging ' + (Math.abs(batMin[1]) / 1000).toFixed(1) + ' GW at ' + fmtWhen(batMin[0], TZ) : 'net battery flow');
+
+  var note = document.getElementById('act3-note');
+  if (note) {
+    note.innerHTML = 'The mix below is <strong>' + dayLabel + '</strong>, the Texas day holding the peak hour in this window. ' +
+      'Solar carries the afternoon and charges the batteries; the batteries pay it back after sunset, when demand is still high and the panels are done. ' +
+      'Negative battery values are charging, positive are discharging.';
+  }
+
+  Highcharts.chart('chart-mix', {
+    chart: { type: 'area' },
     orbit: {
-      id: 'uc07-scatter-price',
+      id: 'uc07-mix',
       llmContext: { text: [
-        'Each point is one hour: Paris temperature on x, French day-ahead price on y (EUR/MWh), ' + pairsPrice.length + ' hours. Pearson r is ' + rPrice.toFixed(2) + ': the price does not follow the temperature. Highest hourly mean price ' + Math.round(topPrice[1]) + ' EUR/MWh at ' + fmtWhen(topPrice[0], PLACES.paris.tz) + ' Paris time.',
-        'The price is set by the hour of day, not the thermometer: midday solar pushes it to zero or below on sunny days, and the expensive hours come in the evening when the sun is gone, hot day or not.',
+        'ERCOT generation by fuel type on ' + dayLabel + ', the day of the peak hour, stacked hour by hour in MW. Solar rises from zero at dawn to about ' + (sunMax ? Math.round(sunMax[1]) : 0) + ' MW at midday, then falls away through the evening while natural gas and wind take over. Nuclear and coal are close to flat all day.',
+        'At the peak demand hour itself, solar supplied about ' + Math.round(sunAtPeak) + ' MW, roughly ' + Math.round(100 * sunAtPeak / (peak[1] * 1000)) + ' percent of demand.',
         ctxCommon
       ] }
     },
-    title: { text: 'France: day-ahead price against temperature, hour by hour' },
-    subtitle: { text: 'Try: open Correlations or Trend Line; there is no slope to find' },
-    xAxis: { title: { text: 'Paris temperature (°C)' } },
-    yAxis: { title: { text: 'Day-ahead price (EUR/MWh)' }, plotLines: [{ value: 0, width: 1, color: '#918fa3', zIndex: 3 }] },
+    title: { text: 'Texas generation by fuel, ' + dayLabel },
+    subtitle: { text: 'Try: open Contribution to rank the sources, or Filter and Focus to isolate solar' },
+    xAxis: { type: 'datetime' },
+    yAxis: { title: { text: 'Generation (MW)' } },
+    tooltip: { shared: true, valueSuffix: ' MW' },
+    plotOptions: { area: { stacking: 'normal', marker: { enabled: false }, lineWidth: 1 } },
+    series: series.map(function (s) { return { name: s.name, data: s.data, color: FUEL_COLOR[s.key] }; })
+  });
+
+  Highcharts.chart('chart-bat', {
+    chart: { type: 'column' },
+    orbit: {
+      id: 'uc07-bat',
+      llmContext: { text: [
+        'Net battery flow on the ERCOT grid on ' + dayLabel + ', in MW per hour. Negative bars are batteries charging, positive bars are batteries discharging back to the grid. They charge through the middle of the day on cheap surplus solar and discharge into the evening peak: ' +
+          (batMax ? Math.round(batMax[1]) + ' MW at ' + fmtWhen(batMax[0], TZ) + ' Texas time' : 'no discharge recorded') + ', after charging ' + (batMin ? Math.round(Math.abs(batMin[1])) + ' MW at ' + fmtWhen(batMin[0], TZ) : '') + '.',
+        'This is the part of the day the panels cannot cover, and it is where Texas storage now does its work.',
+        ctxCommon
+      ] }
+    },
+    title: { text: 'Batteries on the record day: charge at noon, pay back at night' },
+    subtitle: { text: 'Try: open Summary for the totals, or Annotate to mark the crossover' },
+    xAxis: { type: 'datetime' },
+    yAxis: { title: { text: 'Net battery flow (MW)' }, plotLines: [{ value: 0, width: 1, color: '#918fa3', zIndex: 3 }] },
     legend: { enabled: false },
-    tooltip: { headerFormat: '', pointFormat: '{point.x:.1f} °C, {point.y:.0f} EUR/MWh' },
-    series: [{ name: 'Hourly readings', data: pairsPrice, marker: { radius: 2.5 }, color: '#544fc5' }]
-  });
-
-  /* Heatmap: French price by hour of day (Paris time) and date. x is the Paris
-     calendar day as a UTC midnight timestamp, so the chart shares the page's
-     datetime axis and follows the page-mode date filter. */
-  var cells = [];
-  var fmtDay = new Intl.DateTimeFormat('en-CA', { timeZone: PLACES.paris.tz, year: 'numeric', month: '2-digit', day: '2-digit' });
-  var fmtHour = new Intl.DateTimeFormat('en-GB', { timeZone: PLACES.paris.tz, hour: '2-digit', hour12: false });
-  d.price.forEach(function (p) {
-    var day = Date.parse(fmtDay.format(new Date(p[0])) + 'T00:00:00Z');
-    var h = parseInt(fmtHour.format(new Date(p[0])), 10) % 24;
-    cells.push([day, h, p[1]]);
-  });
-  Highcharts.chart('chart-heat', {
-    chart: { type: 'heatmap' },
-    orbit: {
-      id: 'uc07-heat',
-      llmContext: { text: [
-        'French day-ahead price in EUR/MWh by hour of day (Paris time, rows) and date (columns). The pale band around midday is solar pushing the price down; the dark ridge in the evening is where the expensive hours sit, on hot and cool days alike.',
-        ctxCommon
-      ] }
-    },
-    title: { text: 'France: the shape of the price, by hour and date' },
-    subtitle: { text: 'Try: filter the page to a hot week in the top bar; the evening ridge stays where it is' },
-    xAxis: { type: 'datetime', title: { text: 'Date (Paris calendar day)' } },
-    yAxis: { categories: Array.apply(null, Array(24)).map(function (_, i) { return (i < 10 ? '0' : '') + i + ':00'; }), title: { text: 'Hour, Paris time' }, reversed: true, min: 0, endOnTick: false, startOnTick: false, tickInterval: 2 },
-    colorAxis: { min: -20, max: 250, minColor: '#eef2ff', maxColor: '#3730a3' },
-    legend: { align: 'right', layout: 'vertical', verticalAlign: 'middle', symbolHeight: 260 },
-    tooltip: { formatter: function () { return (function (p) { return Highcharts.dateFormat('%e %b', p.x) + ' ' + p.series.yAxis.categories[p.y] + ': <b>' + Math.round(p.value); })(this.point || this) + ' EUR/MWh</b>'; } },
-    series: [{ name: 'Price (EUR/MWh)', data: cells, colsize: DAY, borderWidth: 0 }]
+    tooltip: { valueSuffix: ' MW' },
+    series: [{
+      name: 'Net battery flow',
+      data: bat,
+      color: '#d568fb',
+      negativeColor: '#2caffe',
+      pointPadding: 0.02,
+      groupPadding: 0.04
+    }]
   });
 
   if (window.Highcharts && Highcharts.orbitPage) {
